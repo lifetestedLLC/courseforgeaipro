@@ -124,8 +124,8 @@ export default function Home() {
               price="$19"
               period="/month"
               features={[
-                "5 AI-generated courses/month",
-                "10 AI videos/month",
+                "20 AI-generated courses/month",
+                "25 AI videos/month",
                 "Unlimited quizzes",
                 "Basic integrations",
                 "Email support"
@@ -137,8 +137,8 @@ export default function Home() {
               price="$49"
               period="/month"
               features={[
-                "25 AI-generated courses/month",
-                "50 AI videos/month",
+                "40 AI-generated courses/month",
+                "65 AI videos/month",
                 "Unlimited quizzes",
                 "All integrations",
                 "Priority support",
