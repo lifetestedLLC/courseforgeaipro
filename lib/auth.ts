@@ -1,14 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-
-// Temporary in-memory user storage (will be replaced with database)
-const users: Array<{
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-}> = [];
+import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -23,7 +16,9 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
-        const user = users.find(u => u.email === credentials.email);
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
 
         if (!user || !user.password) {
           throw new Error("Invalid credentials");
@@ -41,7 +36,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
+          name: user.name || "",
         };
       }
     })
@@ -71,9 +66,11 @@ export const authOptions: NextAuthOptions = {
   }
 };
 
-// Helper function to create a new user (will be replaced with database)
+// Helper function to create a new user
 export async function createUser(email: string, password: string, name: string) {
-  const existingUser = users.find(u => u.email === email);
+  const existingUser = await prisma.user.findUnique({
+    where: { email }
+  });
   
   if (existingUser) {
     throw new Error("User already exists");
@@ -81,14 +78,13 @@ export async function createUser(email: string, password: string, name: string) 
 
   const hashedPassword = await bcrypt.hash(password, 12);
   
-  const user = {
-    id: Math.random().toString(36).substr(2, 9),
-    email,
-    password: hashedPassword,
-    name,
-  };
-
-  users.push(user);
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+    },
+  });
   
   return {
     id: user.id,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import stripe from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
 // This endpoint handles Stripe webhooks
@@ -63,23 +64,47 @@ export async function POST(request: NextRequest) {
           subscriptionId: session.subscription,
         });
         
-        // TODO: Update user subscription in database
-        // - Store subscription ID
-        // - Store customer ID
-        // - Set plan type
-        // - Activate subscription
+        // Update user subscription in database
+        if (session.customer && session.subscription) {
+          const subscription = await stripe.subscriptions.retrieve(
+            session.subscription as string
+          );
+          
+          // Cast to any to handle the Stripe SDK type inconsistency
+          const sub = subscription as any;
+          
+          await prisma.user.update({
+            where: { id: session.client_reference_id || undefined },
+            data: {
+              stripeCustomerId: session.customer as string,
+              stripeSubscriptionId: sub.id,
+              stripePriceId: sub.items?.data?.[0]?.price?.id,
+              stripeCurrentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000) : null,
+              subscriptionTier: session.metadata?.plan,
+              subscriptionStatus: sub.status,
+            },
+          });
+        }
         
         break;
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription;
+        const subscription = event.data.object as any;
         console.log('Subscription updated:', {
           subscriptionId: subscription.id,
           status: subscription.status,
         });
         
-        // TODO: Update subscription status in database
+        // Update subscription status in database
+        await prisma.user.updateMany({
+          where: { stripeSubscriptionId: subscription.id },
+          data: {
+            subscriptionStatus: subscription.status,
+            stripePriceId: subscription.items?.data?.[0]?.price?.id,
+            stripeCurrentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+          },
+        });
         
         break;
       }
@@ -90,35 +115,57 @@ export async function POST(request: NextRequest) {
           subscriptionId: subscription.id,
         });
         
-        // TODO: Deactivate subscription in database
-        // - Remove subscription ID
-        // - Downgrade to free plan
+        // Deactivate subscription in database
+        await prisma.user.updateMany({
+          where: { stripeSubscriptionId: subscription.id },
+          data: {
+            stripeSubscriptionId: null,
+            stripePriceId: null,
+            stripeCurrentPeriodEnd: null,
+            subscriptionTier: null,
+            subscriptionStatus: 'canceled',
+          },
+        });
         
         break;
       }
 
       case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object as any;
         console.log('Payment succeeded:', {
           invoiceId: invoice.id,
           amount: invoice.amount_paid,
         });
         
-        // TODO: Record payment in database
+        // Update subscription status to active
+        if (invoice.subscription) {
+          await prisma.user.updateMany({
+            where: { stripeSubscriptionId: invoice.subscription as string },
+            data: {
+              subscriptionStatus: 'active',
+            },
+          });
+        }
         
         break;
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object as any;
         console.log('Payment failed:', {
           invoiceId: invoice.id,
           customerEmail: invoice.customer_email,
         });
         
-        // TODO: Handle failed payment
-        // - Notify user
-        // - Possibly suspend subscription
+        // Mark subscription as past_due
+        if (invoice.subscription) {
+          await prisma.user.updateMany({
+            where: { stripeSubscriptionId: invoice.subscription as string },
+            data: {
+              subscriptionStatus: 'past_due',
+            },
+          });
+        }
         
         break;
       }
