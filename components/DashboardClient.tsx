@@ -118,24 +118,30 @@ export default function DashboardClient() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid md:grid-cols-3 gap-4">
-            <ActionButton
-              icon={<BookOpen className="w-6 h-6" />}
-              title="Generate Course"
-              description="Create a new AI-powered course"
-              color="primary"
-            />
-            <ActionButton
-              icon={<Video className="w-6 h-6" />}
-              title="Create Video"
-              description="Generate AI video content"
-              color="accent"
-            />
-            <ActionButton
-              icon={<FileQuestion className="w-6 h-6" />}
-              title="Build Quiz"
-              description="Create interactive assessments"
-              color="green"
-            />
+            <Link href="/dashboard/generate">
+              <ActionButton
+                icon={<BookOpen className="w-6 h-6" />}
+                title="Generate Course"
+                description="Create a new AI-powered course"
+                color="primary"
+              />
+            </Link>
+            <Link href="/dashboard/generate">
+              <ActionButton
+                icon={<Video className="w-6 h-6" />}
+                title="Create Video"
+                description="Generate AI video content"
+                color="accent"
+              />
+            </Link>
+            <Link href="/dashboard/generate">
+              <ActionButton
+                icon={<FileQuestion className="w-6 h-6" />}
+                title="Build Quiz"
+                description="Create interactive assessments"
+                color="green"
+              />
+            </Link>
           </div>
         </div>
 
