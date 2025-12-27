@@ -90,6 +90,32 @@ courseforgeaipro/
 
 ## Troubleshooting
 
+### Next.js Dev Lock File Error
+
+If you see the error `Unable to acquire lock at .next/dev/lock, is another instance of next dev running?`, it means another Next.js dev server instance is already running.
+
+**Solution 1: Terminate the existing process**
+```bash
+# On macOS/Linux
+pkill -f "next dev"
+
+# Or find and kill the specific process
+ps aux | grep "next dev"
+kill -9 <PID>
+
+# On Windows (PowerShell)
+Get-Process | Where-Object {$_.ProcessName -like "*node*"} | Stop-Process -Force
+```
+
+**Solution 2: Remove the lock file manually**
+```bash
+rm -rf .next/dev
+```
+
+**Solution 3: Restart your terminal/IDE**
+
+Sometimes the process persists even after closing the terminal. Restart your development environment completely.
+
 ### Port Already in Use (EADDRINUSE)
 
 If you see the error `Error: listen EADDRINUSE: address already in use :::3000`, it means port 3000 is occupied by another process.
