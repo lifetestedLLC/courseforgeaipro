@@ -1,3 +1,5 @@
+import GetStartedButton from './components/GetStartedButton'
+
 export default function Home() {
   return (
     <main style={{
@@ -66,20 +68,7 @@ export default function Home() {
           </ul>
         </div>
         
-        <button style={{
-          backgroundColor: 'white',
-          color: '#667eea',
-          border: 'none',
-          padding: '1rem 2.5rem',
-          fontSize: '1.2rem',
-          fontWeight: 'bold',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
-          transition: 'transform 0.2s'
-        }}>
-          Get Started
-        </button>
+        <GetStartedButton />
         
         <div style={{
           marginTop: '3rem',

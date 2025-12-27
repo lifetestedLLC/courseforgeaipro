@@ -1,7 +1,7 @@
 {
   "name": "courseforgeaipro",
   "version": "1.0.0",
-  "description": "AI Course and creation website.",
+  "description": "AI Course creation and management website.",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
