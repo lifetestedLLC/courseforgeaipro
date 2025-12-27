@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!openai) {
+      throw new Error("OpenAI client not initialized");
+    }
+
     // Generate course outline using OpenAI
     const completion = await openai.chat.completions.create({
       model: "gpt-4",

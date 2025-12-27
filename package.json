@@ -10,6 +10,7 @@
   },
   "description": "AI Course and creation website",
   "dependencies": {
+    "@stripe/stripe-js": "^8.6.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
@@ -23,6 +24,7 @@
     "postcss": "^8.5.6",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "stripe": "^20.1.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },

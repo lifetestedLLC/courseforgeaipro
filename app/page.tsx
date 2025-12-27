@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Sparkles, Video, FileQuestion, Zap, Download, Users } from 'lucide-react';
+import PricingCard from '@/components/PricingCard';
 
 export default function Home() {
   return (
@@ -131,6 +132,7 @@ export default function Home() {
                 "Email support"
               ]}
               trialText="14-day free trial"
+              plan="starter"
             />
             <PricingCard
               name="Professional"
@@ -146,6 +148,7 @@ export default function Home() {
               ]}
               highlighted
               trialText="14-day free trial"
+              plan="professional"
             />
             <PricingCard
               name="Enterprise"
@@ -161,6 +164,7 @@ export default function Home() {
                 "White-label option"
               ]}
               trialText="30-day free trial"
+              plan="enterprise"
             />
           </div>
         </div>
@@ -262,52 +266,6 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
       <div className="mb-4">{icon}</div>
       <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
       <p className="text-gray-600">{description}</p>
-    </div>
-  );
-}
-
-function PricingCard({ 
-  name, 
-  price, 
-  period, 
-  features, 
-  highlighted = false,
-  trialText
-}: { 
-  name: string, 
-  price: string, 
-  period: string, 
-  features: string[], 
-  highlighted?: boolean,
-  trialText: string
-}) {
-  return (
-    <div className={`p-8 rounded-xl ${highlighted ? 'bg-primary-600 text-white shadow-xl scale-105' : 'bg-white border border-gray-200'}`}>
-      <h3 className={`text-2xl font-bold mb-2 ${highlighted ? 'text-white' : 'text-gray-900'}`}>{name}</h3>
-      <div className="mb-6">
-        <span className={`text-4xl font-bold ${highlighted ? 'text-white' : 'text-gray-900'}`}>{price}</span>
-        <span className={highlighted ? 'text-primary-100' : 'text-gray-600'}>{period}</span>
-      </div>
-      <ul className="space-y-3 mb-8">
-        {features.map((feature, idx) => (
-          <li key={idx} className="flex items-start">
-            <svg className={`w-5 h-5 mr-2 mt-0.5 ${highlighted ? 'text-white' : 'text-primary-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className={highlighted ? 'text-primary-50' : 'text-gray-600'}>{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <Link 
-        href="/dashboard"
-        className={`block text-center py-3 px-6 rounded-lg font-semibold transition ${
-          highlighted 
-            ? 'bg-white text-primary-600 hover:bg-gray-100' 
-            : 'bg-primary-600 text-white hover:bg-primary-700'
-        }`}
-      >
-        {trialText}
-      </Link>
     </div>
   );
 }

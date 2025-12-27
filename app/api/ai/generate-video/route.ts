@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!openai) {
+      throw new Error("OpenAI client not initialized");
+    }
+
     // Generate video script using OpenAI
     const completion = await openai.chat.completions.create({
       model: "gpt-4",

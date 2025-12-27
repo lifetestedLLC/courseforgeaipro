@@ -34,6 +34,10 @@ export async function POST(request: NextRequest) {
 
     const numQuestions = questionCount || 10;
 
+    if (!openai) {
+      throw new Error("OpenAI client not initialized");
+    }
+
     // Generate quiz using OpenAI
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
