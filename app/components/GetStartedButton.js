@@ -1,12 +1,19 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function GetStartedButton() {
   const [isHovered, setIsHovered] = useState(false)
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push('/dashboard')
+  }
 
   return (
     <button
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
