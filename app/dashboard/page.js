@@ -26,16 +26,38 @@ export default function Dashboard() {
           }}>
             Dashboard
           </h1>
-          <Link href="/" style={{
-            color: 'white',
-            textDecoration: 'none',
-            padding: '0.5rem 1rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            borderRadius: '6px',
-            transition: 'background-color 0.2s'
-          }}>
-            ← Back to Home
-          </Link>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <Link href="/account" style={{
+              color: 'white',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: '6px',
+              transition: 'background-color 0.2s'
+            }}>
+              Account
+            </Link>
+            <Link href="/settings" style={{
+              color: 'white',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: '6px',
+              transition: 'background-color 0.2s'
+            }}>
+              Settings
+            </Link>
+            <Link href="/" style={{
+              color: 'white',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: '6px',
+              transition: 'background-color 0.2s'
+            }}>
+              ← Home
+            </Link>
+          </div>
         </div>
 
         <div style={{

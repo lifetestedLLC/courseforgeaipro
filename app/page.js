@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import GetStartedButton from './components/GetStartedButton'
 
 export default function Home() {
@@ -13,6 +14,37 @@ export default function Home() {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white'
     }}>
+      <div style={{
+        position: 'absolute',
+        top: '2rem',
+        right: '2rem',
+        display: 'flex',
+        gap: '1rem'
+      }}>
+        <Link href="/login" style={{
+          color: 'white',
+          textDecoration: 'none',
+          padding: '0.5rem 1.5rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+          borderRadius: '6px',
+          fontWeight: '500',
+          transition: 'background-color 0.2s'
+        }}>
+          Login
+        </Link>
+        <Link href="/signup" style={{
+          color: '#667eea',
+          backgroundColor: 'white',
+          textDecoration: 'none',
+          padding: '0.5rem 1.5rem',
+          borderRadius: '6px',
+          fontWeight: 'bold',
+          transition: 'transform 0.2s'
+        }}>
+          Sign Up
+        </Link>
+      </div>
+
       <div style={{
         maxWidth: '800px',
         textAlign: 'center'
