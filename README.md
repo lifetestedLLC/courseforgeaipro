@@ -1,150 +1,51 @@
 # CourseForge AI Pro
 
-AI-powered course creation and management platform built with Next.js and React.
+AI-powered course creation platform for educators and content creators.
 
 ## Features
 
-- ✨ AI-Powered Course Generation
-- 📚 Comprehensive Content Management
-- 🎯 Smart Learning Paths
-- 📊 Progress Tracking & Analytics
+- 🎓 **AI Course Generation** - Create comprehensive course outlines and content
+- 🎥 **AI Video Creation** - Generate professional videos with AI
+- 📝 **Interactive Quizzes** - Build assessments automatically
+- 🔗 **Platform Integrations** - Export to Coursera, Udemy, Teachable, and more
+- 📊 **Creator Dashboard** - Manage all your courses in one place
+- 💰 **Affordable Pricing** - Plans starting at $19/month with free trial
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18.x or higher
-- npm or yarn
-
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/lifetestedLLC/courseforgeaipro.git
-cd courseforgeaipro
-```
-
-2. Install dependencies:
 ```bash
 npm install
 ```
 
 ### Development
 
-Run the development server:
-
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
-
-**If port 3000 is already in use**, you can:
-- Kill the existing process using port 3000:
-  ```bash
-  # On macOS/Linux
-  lsof -ti:3000 | xargs kill -9
-  
-  # On Windows (PowerShell)
-  Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Process -Force
-  ```
-- Or run on a different port:
-  ```bash
-  npm run dev -- -p 3001
-  ```
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
 ### Build
 
-Build the application for production:
-
 ```bash
 npm run build
-```
-
-### Production
-
-Start the production server:
-
-```bash
 npm start
 ```
 
+## Domain
+
+This project is configured for **courseforgeai.org**
+
 ## Tech Stack
 
-- **Framework:** Next.js 16.1.1
-- **UI Library:** React 19.2.3
-- **Styling:** Inline CSS (with gradient backgrounds)
-
-## Project Structure
-
-```
-courseforgeaipro/
-├── app/
-│   ├── components/
-│   │   └── GetStartedButton.js  # Interactive button component
-│   ├── layout.js      # Root layout component
-│   └── page.js        # Home page
-├── package.json       # Project dependencies
-└── README.md          # Documentation
-```
-
-## Troubleshooting
-
-### Next.js Dev Lock File Error
-
-If you see the error `Unable to acquire lock at .next/dev/lock, is another instance of next dev running?`, it means another Next.js dev server instance is already running.
-
-**Solution 1: Terminate the existing process**
-```bash
-# On macOS/Linux
-pkill -f "next dev"
-
-# Or find and kill the specific process
-ps aux | grep "next dev"
-kill -9 <PID>
-
-# On Windows (PowerShell)
-Get-Process | Where-Object {$_.ProcessName -like "*node*"} | Stop-Process -Force
-```
-
-**Solution 2: Remove the lock file manually**
-```bash
-rm -rf .next/dev
-```
-
-**Solution 3: Restart your terminal/IDE**
-
-Sometimes the process persists even after closing the terminal. Restart your development environment completely.
-
-### Port Already in Use (EADDRINUSE)
-
-If you see the error `Error: listen EADDRINUSE: address already in use :::3000`, it means port 3000 is occupied by another process.
-
-**Solution 1: Kill the existing process**
-```bash
-# On macOS/Linux
-lsof -ti:3000 | xargs kill -9
-
-# On Windows (PowerShell)
-Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Process -Force
-
-# On Windows (CMD)
-for /f "tokens=5" %a in ('netstat -aon ^| find ":3000" ^| find "LISTENING"') do taskkill /F /PID %a
-```
-
-**Solution 2: Use a different port**
-```bash
-npm run dev -- -p 3001
-# Then open http://localhost:3001
-```
-
-**Solution 3: Set port in package.json**
-
-Add a PORT environment variable to your dev script:
-```json
-"dev": "PORT=3001 next dev"
-```
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- Lucide Icons
 
 ## License
 
-ISC
+All rights reserved.
