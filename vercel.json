@@ -27,6 +27,7 @@
           "value": "(?<host>.*\\.vercel\\.app)"
         }
       ],
+      "_comment": "Redirect all Vercel deployment URLs to the custom domain. Update courseforgeai.org if deploying to a different domain.",
       "destination": "https://courseforgeai.org/:path*",
       "permanent": true
     }

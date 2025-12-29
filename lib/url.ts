@@ -16,9 +16,11 @@ export function getBaseUrl(request: Request): string {
   const host = headers.get('x-forwarded-host') || headers.get('host');
   
   if (host) {
-    // Get protocol from x-forwarded-proto or assume https in production
+    // Get protocol from x-forwarded-proto header (set by proxy/load balancer)
+    // In production (Vercel), this will be 'https'
+    // In development, check if localhost to use 'http', otherwise default to 'https'
     const proto = headers.get('x-forwarded-proto') || 
-                  (host.includes('localhost') ? 'http' : 'https');
+                  (host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https');
     return `${proto}://${host}`;
   }
   
