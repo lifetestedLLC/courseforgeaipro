@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import stripe from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import Stripe from "stripe";
 
 // This endpoint handles Stripe webhooks
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('stripe-signature');
 
   if (!signature) {
+    logger.warn("Stripe webhook: no signature provided");
     return NextResponse.json(
       { error: "No signature provided" },
       { status: 400 }
@@ -21,7 +23,7 @@ export async function POST(request: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   
   if (!webhookSecret) {
-    console.error("Stripe webhook secret not configured");
+    logger.error("Stripe webhook secret not configured");
     return NextResponse.json(
       { error: "Webhook secret not configured" },
       { status: 500 }
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   if (!stripe) {
-    console.error("Stripe client not initialized");
+    logger.error("Stripe client not initialized");
     return NextResponse.json(
       { error: "Stripe not configured" },
       { status: 500 }
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
       webhookSecret
     );
   } catch (error) {
-    console.error("Webhook signature verification failed:", error);
+    logger.error("Webhook signature verification failed", error as Error);
     return NextResponse.json(
       { error: "Invalid signature" },
       { status: 400 }
@@ -58,10 +60,10 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        console.log('Checkout completed:', {
+        logger.info('Stripe: Checkout completed', {
           userId: session.metadata?.userId,
           plan: session.metadata?.plan,
-          subscriptionId: session.subscription,
+          subscriptionId: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id,
         });
         
         // Update user subscription in database
@@ -84,25 +86,32 @@ export async function POST(request: NextRequest) {
               subscriptionStatus: sub.status,
             },
           });
+          
+          logger.info('Stripe: User subscription updated in database', {
+            userId: session.client_reference_id || 'unknown',
+            subscriptionId: sub.id
+          });
         }
         
         break;
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as any;
-        console.log('Subscription updated:', {
+        const subscription = event.data.object as Stripe.Subscription;
+        logger.info('Stripe: Subscription updated', {
           subscriptionId: subscription.id,
           status: subscription.status,
         });
         
         // Update subscription status in database
+        // Note: Stripe API uses snake_case but types may vary
+        const periodEnd = (subscription as any).current_period_end;
         await prisma.user.updateMany({
           where: { stripeSubscriptionId: subscription.id },
           data: {
             subscriptionStatus: subscription.status,
             stripePriceId: subscription.items?.data?.[0]?.price?.id,
-            stripeCurrentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+            stripeCurrentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
           },
         });
         
@@ -111,7 +120,7 @@ export async function POST(request: NextRequest) {
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        console.log('Subscription cancelled:', {
+        logger.info('Stripe: Subscription cancelled', {
           subscriptionId: subscription.id,
         });
         
@@ -131,16 +140,18 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as any;
-        console.log('Payment succeeded:', {
+        const invoice = event.data.object as Stripe.Invoice;
+        logger.info('Stripe: Payment succeeded', {
           invoiceId: invoice.id,
           amount: invoice.amount_paid,
         });
         
         // Update subscription status to active
-        if (invoice.subscription) {
+        // Note: Stripe API uses snake_case but types may vary
+        const subscriptionId = (invoice as any).subscription;
+        if (subscriptionId) {
           await prisma.user.updateMany({
-            where: { stripeSubscriptionId: invoice.subscription as string },
+            where: { stripeSubscriptionId: subscriptionId as string },
             data: {
               subscriptionStatus: 'active',
             },
@@ -151,16 +162,18 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as any;
-        console.log('Payment failed:', {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerEmail = (invoice as any).customer_email;
+        logger.warn('Stripe: Payment failed', {
           invoiceId: invoice.id,
-          customerEmail: invoice.customer_email,
+          customerEmail: customerEmail || undefined,
         });
         
         // Mark subscription as past_due
-        if (invoice.subscription) {
+        const subscriptionId = (invoice as any).subscription;
+        if (subscriptionId) {
           await prisma.user.updateMany({
-            where: { stripeSubscriptionId: invoice.subscription as string },
+            where: { stripeSubscriptionId: subscriptionId as string },
             data: {
               subscriptionStatus: 'past_due',
             },
@@ -171,12 +184,14 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.debug(`Stripe: Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Error handling webhook:", error);
+    logger.error("Error handling webhook", error as Error, {
+      eventType: event.type
+    });
     return NextResponse.json(
       { error: "Webhook handler failed" },
       { status: 500 }

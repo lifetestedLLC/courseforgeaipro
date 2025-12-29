@@ -11,6 +11,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
+    "db:seed": "ts-node prisma/seed.ts",
     "postinstall": "prisma generate"
   },
   "description": "AI Course and creation website",
@@ -35,10 +36,14 @@
     "react-dom": "^19.2.3",
     "stripe": "^20.1.0",
     "tailwindcss": "^4.1.18",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/pg": "^8.16.0"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

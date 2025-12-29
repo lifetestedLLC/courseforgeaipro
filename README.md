@@ -34,6 +34,29 @@ npm run build
 npm start
 ```
 
+## Deployment
+
+See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for detailed Vercel deployment instructions.
+
+## Admin Setup
+
+See [ADMIN_SETUP.md](./ADMIN_SETUP.md) for instructions on creating and managing admin users.
+
+Default admin credentials (change after first login):
+- Email: `admin@courseforgeai.org`
+- Password: `Admin123!`
+
+## Documentation
+
+- [Deployment Guide](./DEPLOYMENT.md) - General deployment options
+- [Vercel Deployment](./VERCEL_DEPLOYMENT.md) - Vercel-specific setup
+- [Admin Setup](./ADMIN_SETUP.md) - Admin user management
+- [Authentication](./AUTH_IMPLEMENTATION.md) - Authentication setup
+- [Database](./DATABASE_IMPLEMENTATION.md) - Database schema and setup
+- [OpenAI Integration](./OPENAI_IMPLEMENTATION.md) - AI features setup
+- [Stripe Integration](./STRIPE_IMPLEMENTATION.md) - Payment processing
+- [Project Overview](./PROJECT_OVERVIEW.md) - Architecture overview
+
 ## Domain
 
 This project is configured for **courseforgeai.org**
@@ -45,6 +68,11 @@ This project is configured for **courseforgeai.org**
 - TypeScript
 - Tailwind CSS
 - Lucide Icons
+- NextAuth.js (Authentication)
+- Prisma (ORM)
+- PostgreSQL (Database)
+- Stripe (Payments)
+- OpenAI (AI Features)
 
 ## License
 
