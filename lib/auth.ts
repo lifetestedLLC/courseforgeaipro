@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { logger } from "./logger";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,14 +14,18 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          logger.warn("Login attempt with missing credentials");
           throw new Error("Invalid credentials");
         }
+
+        logger.info("Login attempt", { email: credentials.email });
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
 
         if (!user || !user.password) {
+          logger.warn("Login failed: user not found", { email: credentials.email });
           throw new Error("Invalid credentials");
         }
 
@@ -30,8 +35,17 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isCorrectPassword) {
+          logger.warn("Login failed: incorrect password", { 
+            email: credentials.email,
+            userId: user.id 
+          });
           throw new Error("Invalid credentials");
         }
+
+        logger.info("User logged in successfully", { 
+          userId: user.id, 
+          email: user.email 
+        });
 
         return {
           id: user.id,
@@ -73,6 +87,7 @@ export async function createUser(email: string, password: string, name: string) 
   });
   
   if (existingUser) {
+    logger.warn("User creation failed: email already exists", { email });
     throw new Error("User already exists");
   }
 
@@ -85,6 +100,8 @@ export async function createUser(email: string, password: string, name: string) 
       name,
     },
   });
+  
+  logger.info("User created in database", { userId: user.id, email: user.email });
   
   return {
     id: user.id,
