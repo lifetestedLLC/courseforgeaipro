@@ -166,8 +166,8 @@ export async function POST(req: NextRequest) {
 - Use Tailwind utility classes for styling
 - Follow mobile-first responsive design
 - Use custom color scheme defined in globals.css:
-  - Primary: Blue/Cyan shades (#0284c7 to #0c4a6e)
-  - Accent: Purple/Magenta shades (#d946ef to #701a75)
+  - Primary: Blue/Cyan palette from primary-50 (#f0f9ff) through primary-900 (#0c4a6e), with primary-600 (#0284c7) as the main action color
+  - Accent: Purple/Magenta palette, commonly using shades like #d946ef and #701a75 for emphasis
 - Leverage Tailwind's gradient utilities for backgrounds
 - Use consistent spacing with Tailwind's spacing scale
 
