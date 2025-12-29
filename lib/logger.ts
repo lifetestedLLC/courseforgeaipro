@@ -6,10 +6,7 @@
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 interface LogContext {
-  userId?: string;
-  email?: string;
-  action?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined | null;
 }
 
 class Logger {
@@ -28,7 +25,7 @@ class Logger {
   }
 
   error(message: string, error?: Error, context?: LogContext): void {
-    const errorContext = {
+    const errorContext: LogContext = {
       ...context,
       error: error?.message,
       stack: error?.stack,

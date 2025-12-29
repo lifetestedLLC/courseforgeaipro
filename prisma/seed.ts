@@ -11,10 +11,10 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting database seed...');
 
-  // Admin credentials
-  const adminEmail = 'admin@courseforgeai.org';
-  const adminPassword = 'Admin123!'; // Change this in production
-  const adminName = 'Admin User';
+  // Admin credentials - can be overridden via environment variables
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@courseforgeai.org';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+  const adminName = process.env.ADMIN_NAME || 'Admin User';
 
   // Check if admin already exists
   const existingAdmin = await prisma.user.findUnique({
@@ -43,7 +43,7 @@ async function main() {
   console.log('✅ Admin user created successfully!');
   console.log('-----------------------------------');
   console.log(`Email: ${adminEmail}`);
-  console.log(`Password: ${adminPassword}`);
+  console.log(`Password: ${'*'.repeat(adminPassword.length)}`);
   console.log(`User ID: ${admin.id}`);
   console.log('-----------------------------------');
   console.log('⚠️  IMPORTANT: Change the admin password after first login!');

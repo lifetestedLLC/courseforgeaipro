@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         logger.info('Stripe: Checkout completed', {
           userId: session.metadata?.userId,
           plan: session.metadata?.plan,
-          subscriptionId: session.subscription,
+          subscriptionId: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id,
         });
         
         // Update user subscription in database
@@ -97,19 +97,21 @@ export async function POST(request: NextRequest) {
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as any;
+        const subscription = event.data.object as Stripe.Subscription;
         logger.info('Stripe: Subscription updated', {
           subscriptionId: subscription.id,
           status: subscription.status,
         });
         
         // Update subscription status in database
+        // Note: Stripe API uses snake_case but types may vary
+        const periodEnd = (subscription as any).current_period_end;
         await prisma.user.updateMany({
           where: { stripeSubscriptionId: subscription.id },
           data: {
             subscriptionStatus: subscription.status,
             stripePriceId: subscription.items?.data?.[0]?.price?.id,
-            stripeCurrentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+            stripeCurrentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
           },
         });
         
@@ -138,16 +140,18 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as any;
+        const invoice = event.data.object as Stripe.Invoice;
         logger.info('Stripe: Payment succeeded', {
           invoiceId: invoice.id,
           amount: invoice.amount_paid,
         });
         
         // Update subscription status to active
-        if (invoice.subscription) {
+        // Note: Stripe API uses snake_case but types may vary
+        const subscriptionId = (invoice as any).subscription;
+        if (subscriptionId) {
           await prisma.user.updateMany({
-            where: { stripeSubscriptionId: invoice.subscription as string },
+            where: { stripeSubscriptionId: subscriptionId as string },
             data: {
               subscriptionStatus: 'active',
             },
@@ -158,16 +162,18 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as any;
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerEmail = (invoice as any).customer_email;
         logger.warn('Stripe: Payment failed', {
           invoiceId: invoice.id,
-          customerEmail: invoice.customer_email,
+          customerEmail: customerEmail || undefined,
         });
         
         // Mark subscription as past_due
-        if (invoice.subscription) {
+        const subscriptionId = (invoice as any).subscription;
+        if (subscriptionId) {
           await prisma.user.updateMany({
-            where: { stripeSubscriptionId: invoice.subscription as string },
+            where: { stripeSubscriptionId: subscriptionId as string },
             data: {
               subscriptionStatus: 'past_due',
             },
