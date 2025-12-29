@@ -84,8 +84,6 @@ import type { User } from '@/types';
 
 ### Component Structure
 ```typescript
-import { ComponentType } from 'react';
-
 interface ComponentProps {
   prop1: string;
   prop2?: number;
