@@ -1,6 +1,6 @@
 /**
  * Seed script for creating an admin user
- * Run with: npx tsx prisma/seed.ts
+ * Run with: npm run db:seed
  */
 
 import 'dotenv/config';
@@ -8,11 +8,10 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
+import { getDirectDatabaseUrl } from '../lib/db-config';
 
-// Extract the direct PostgreSQL URL from the Prisma Postgres URL
-// The DATABASE_URL format is: prisma+postgres://localhost:PORT/?api_key=BASE64
-// The api_key contains the actual database connection info
-const directDbUrl = 'postgres://postgres:postgres@localhost:51214/template1?sslmode=disable';
+// Get the direct PostgreSQL connection URL from environment
+const directDbUrl = getDirectDatabaseUrl();
 
 // Create a connection pool
 const pool = new Pool({
