@@ -6,9 +6,14 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+// Extract the direct PostgreSQL URL from the Prisma Postgres URL
+// The DATABASE_URL format is: prisma+postgres://localhost:PORT/?api_key=BASE64
+// For Prisma Postgres, we use the direct connection
+const directDbUrl = 'postgres://postgres:postgres@localhost:51214/template1?sslmode=disable';
+
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/courseforgeai',
+  connectionString: directDbUrl,
 });
 
 // Create Prisma adapter
