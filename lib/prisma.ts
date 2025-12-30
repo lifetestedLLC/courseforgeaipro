@@ -1,14 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { getDirectDatabaseUrl } from './db-config';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+// Get the direct PostgreSQL connection URL
+const directDbUrl = getDirectDatabaseUrl();
+
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/courseforgeai',
+  connectionString: directDbUrl,
 });
 
 // Create Prisma adapter
