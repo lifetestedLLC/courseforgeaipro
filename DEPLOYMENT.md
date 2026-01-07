@@ -100,15 +100,41 @@ Point your domain to your hosting:
 
 ## Environment Variables
 
-Create a `.env.local` file for future API integrations:
+Create a `.env.local` file for API integrations:
 
 ```env
-# Add these as you implement backend features
-NEXT_PUBLIC_APP_URL=https://courseforgeai.org
-# Future: API keys for AI services
-# OPENAI_API_KEY=your_key_here
-# STRIPE_SECRET_KEY=your_key_here
+# Authentication
+NEXTAUTH_SECRET=your-secret-key-here
+NEXTAUTH_URL=https://courseforgeai.org  # Use your custom domain, not the Vercel URL
+
+# OpenAI API
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Stripe
+STRIPE_SECRET_KEY=your-stripe-secret-key-here
+STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret-here
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key-here
+
+# Stripe Price IDs
+STRIPE_STARTER_PRICE_ID=price_starter_id_here
+STRIPE_PROFESSIONAL_PRICE_ID=price_professional_id_here
+STRIPE_ENTERPRISE_PRICE_ID=price_enterprise_id_here
+
+# Database
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 ```
+
+**Important:** The application automatically detects the correct domain from request headers, so users will always be redirected to the domain they're accessing (custom domain, not Vercel URL). However, `NEXTAUTH_URL` should still be set to your custom domain for consistency.
+
+## Custom Domain Setup
+
+The application includes automatic domain handling to prevent redirect issues:
+
+1. **`vercel.json`**: Automatically redirects all `.vercel.app` traffic to your custom domain
+2. **Dynamic URL Detection**: The app detects the domain from request headers (`x-forwarded-host`)
+3. **No hardcoded URLs**: All redirects (Stripe callbacks, OAuth, etc.) use the detected domain
+
+This ensures users always stay on your custom domain (courseforgeai.org) and never see the Vercel deployment URL.
 
 ## SSL/HTTPS
 
