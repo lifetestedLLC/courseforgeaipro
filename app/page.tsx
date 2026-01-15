@@ -18,8 +18,8 @@ export default function Home() {
               <Link href="#features" className="text-gray-700 hover:text-primary-600">Features</Link>
               <Link href="#pricing" className="text-gray-700 hover:text-primary-600">Pricing</Link>
               <Link href="#integrations" className="text-gray-700 hover:text-primary-600">Integrations</Link>
-              <Link href="/dashboard" className="text-gray-700 hover:text-primary-600">Dashboard</Link>
-              <Link href="/login" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+              <Link href="/login" className="text-gray-700 hover:text-primary-600">Login</Link>
+              <Link href="/register" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
                 Get Started
               </Link>
             </div>
@@ -41,7 +41,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
-                href="/dashboard" 
+                href="/register" 
                 className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition"
               >
                 Start Free Trial
@@ -205,7 +205,7 @@ export default function Home() {
             Join thousands of creators using AI to build amazing educational content
           </p>
           <Link 
-            href="/dashboard" 
+            href="/register" 
             className="inline-block bg-white text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
           >
             Start Your Free Trial
