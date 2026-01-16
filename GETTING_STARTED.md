@@ -22,9 +22,22 @@ npx prisma dev
 ```
 
 This will:
-- Start a local PostgreSQL server on ports 51213-51215
-- Display the database connection URL (already configured in `.env`)
+- Start a local PostgreSQL server
+- Display the database connection URL that you need to copy
 - Keep running in the background (leave this terminal open)
+
+**IMPORTANT:** After running `npx prisma dev`, you will see output like:
+```
+[log] prisma+postgres://localhost:51213/?api_key=...
+```
+
+Copy this ENTIRE URL and update your `.env` file:
+1. Open `.env` in your text editor
+2. Find the line starting with `DATABASE_URL=`
+3. Replace the entire value with the URL from the `npx prisma dev` output
+4. Save the file
+
+Your ports (51213, 51214, etc.) may be different - that's normal! Just use the URL that `npx prisma dev` gives you.
 
 ### 3. Initialize the Database (First Time Only)
 
@@ -76,12 +89,22 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 **Problem**: The application shows a Prisma error saying it can't reach the database.
 
-**Solution**: Make sure the Prisma dev server is running:
-```bash
-npx prisma dev
-```
+**Most Common Cause**: The `DATABASE_URL` in your `.env` file doesn't match the actual ports that Prisma dev server is using.
 
-Keep this running in a separate terminal window while developing.
+**Solution**: 
+1. Make sure the Prisma dev server is running:
+   ```bash
+   npx prisma dev
+   ```
+2. Copy the `DATABASE_URL` from the output (starts with `prisma+postgres://`)
+3. Update your `.env` file with this URL
+4. Restart your application with `npm run dev`
+
+If you're still having issues:
+- Stop the Prisma dev server (Ctrl+C)
+- Remove old servers: `npx prisma dev rm`
+- Start fresh: `npx prisma dev`
+- Copy the new DATABASE_URL to your `.env`
 
 ### "Unknown file extension .ts" when seeding
 
@@ -131,6 +154,7 @@ npm run db:seed
 - Read [AUTH_IMPLEMENTATION.md](./AUTH_IMPLEMENTATION.md) for authentication details
 - Read [DATABASE_IMPLEMENTATION.md](./DATABASE_IMPLEMENTATION.md) for database schema
 - Read [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment
+- **If you encounter issues, check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** 🔧
 
 ## Production Deployment
 

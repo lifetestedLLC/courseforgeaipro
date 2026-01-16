@@ -12,7 +12,14 @@ export function getDirectDatabaseUrl(): string {
   const databaseUrl = process.env.DATABASE_URL;
   
   if (!databaseUrl) {
-    throw new Error('DATABASE_URL environment variable is not set');
+    throw new Error(
+      'DATABASE_URL environment variable is not set.\n' +
+      'Please follow these steps:\n' +
+      '1. Run: npx prisma dev\n' +
+      '2. Copy the DATABASE_URL from the output\n' +
+      '3. Paste it into your .env file\n' +
+      '4. Restart your application'
+    );
   }
   
   // If it's already a direct postgres:// URL, return it as-is
@@ -40,9 +47,17 @@ export function getDirectDatabaseUrl(): string {
       throw new Error('No databaseUrl found in decoded API key');
     } catch (error) {
       console.error('Error extracting database URL from Prisma Postgres URL:', error);
-      throw new Error('Failed to extract database URL. Please check your DATABASE_URL configuration.');
+      throw new Error(
+        'Failed to extract database URL. Please check your DATABASE_URL configuration.\n' +
+        'Make sure you copied the complete URL from `npx prisma dev` output.\n' +
+        'The URL should start with: prisma+postgres://localhost:...'
+      );
     }
   }
   
-  throw new Error(`Unsupported DATABASE_URL format: ${databaseUrl.substring(0, 20)}...`);
+  throw new Error(
+    `Unsupported DATABASE_URL format: ${databaseUrl.substring(0, 20)}...\n` +
+    'Expected format: prisma+postgres://... or postgresql://...\n' +
+    'Run `npx prisma dev` to get the correct URL for local development.'
+  );
 }
