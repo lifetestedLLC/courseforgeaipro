@@ -39,7 +39,25 @@ Copy this ENTIRE URL and update your `.env` file:
 
 Your ports (51213, 51214, etc.) may be different - that's normal! Just use the URL that `npx prisma dev` gives you.
 
-### 3. Initialize the Database (First Time Only)
+### 3. Configure Environment Variables
+
+Copy the `.env.example` file to create your own `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+**IMPORTANT:** For local development, ensure `NEXTAUTH_URL` is set correctly:
+
+```
+NEXTAUTH_URL=http://localhost:3000
+```
+
+This ensures authentication works properly when running `npm run dev`. The `.env.example` file is already configured with this value.
+
+**Note:** When deploying to production (e.g., Vercel), you'll need to update `NEXTAUTH_URL` to your production domain like `https://courseforgeai.org`.
+
+### 4. Initialize the Database (First Time Only)
 
 In a **new terminal window**, run:
 
@@ -57,7 +75,7 @@ The admin user credentials are:
 
 ⚠️ **Important**: Change the admin password after first login!
 
-### 4. Start the Application
+### 5. Start the Application
 
 ```bash
 npm run dev
@@ -84,6 +102,18 @@ The application will be available at [http://localhost:3000](http://localhost:30
 3. You should be logged in and redirected to the dashboard
 
 ## Common Issues
+
+### "npm run dev redirects to production domain instead of localhost"
+
+**Problem**: When running `npm run dev`, the application tries to connect to `courseforgeai.org` or your production domain instead of `localhost:3000`.
+
+**Solution**: 
+1. Open your `.env` file
+2. Find the `NEXTAUTH_URL` variable
+3. Change it to: `NEXTAUTH_URL=http://localhost:3000`
+4. Restart your development server (`npm run dev`)
+
+**Explanation**: `NEXTAUTH_URL` tells NextAuth where your application is hosted. For local development, it should be `http://localhost:3000`. For production deployment, it should be your production domain like `https://courseforgeai.org`.
 
 ### "Can't reach database server"
 
