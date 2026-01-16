@@ -1,21 +1,31 @@
 'use client';
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { LogIn } from "lucide-react";
+import { LogIn, Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    // Check if user was redirected from registration
+    if (searchParams.get('registered') === 'true') {
+      setSuccessMessage("Account created successfully! Please sign in with your credentials.");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccessMessage("");
     setLoading(true);
 
     try {
@@ -55,6 +65,12 @@ export default function LoginPage() {
 
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                {successMessage}
+              </div>
+            )}
+
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
@@ -124,5 +140,20 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex items-center justify-center px-4">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

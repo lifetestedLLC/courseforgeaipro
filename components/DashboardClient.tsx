@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { 
   BookOpen, 
@@ -13,18 +13,38 @@ import {
   Plus,
   Settings,
   LogOut,
-  Loader2
+  Loader2,
+  Shield
 } from 'lucide-react';
 
 export default function DashboardClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchCurrentUser();
+    }
+  }, [session]);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch('/api/user/current');
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser(data);
+      }
+    } catch (err) {
+      console.error('Error fetching current user:', err);
+    }
+  };
 
   if (status === 'loading') {
     return (
@@ -60,6 +80,15 @@ export default function DashboardClient() {
               <span className="text-sm text-gray-700">
                 {session.user?.name || session.user?.email}
               </span>
+              {currentUser?.role === 'admin' && (
+                <Link 
+                  href="/admin"
+                  className="flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold hover:bg-red-200 transition"
+                >
+                  <Shield className="w-4 h-4 mr-1" />
+                  Admin
+                </Link>
+              )}
               <button className="p-2 text-gray-600 hover:text-primary-600">
                 <Settings className="w-5 h-5" />
               </button>
