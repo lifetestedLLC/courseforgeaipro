@@ -13,26 +13,33 @@ AI-powered course creation platform for educators and content creators.
 
 ## Getting Started
 
-### Installation
+For detailed setup instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
 
-```bash
-npm install
-```
+### Quick Start
 
-### Development
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-```
+2. **Start the database:**
+   ```bash
+   npx prisma dev
+   ```
+   (Keep this running in a separate terminal)
+
+3. **Initialize the database** (first time only):
+   ```bash
+   npm run db:push
+   npm run db:seed
+   ```
+
+4. **Start the application:**
+   ```bash
+   npm run dev
+   ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the site.
-
-### Build
-
-```bash
-npm run build
-npm start
-```
 
 ## Deployment
 
@@ -48,6 +55,7 @@ Default admin credentials (change after first login):
 
 ## Documentation
 
+- **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for setup instructions
 - [Deployment Guide](./DEPLOYMENT.md) - General deployment options
 - [Vercel Deployment](./VERCEL_DEPLOYMENT.md) - Vercel-specific setup
 - [Admin Setup](./ADMIN_SETUP.md) - Admin user management
