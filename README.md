@@ -26,6 +26,8 @@ For detailed setup instructions, see [GETTING_STARTED.md](./GETTING_STARTED.md)
    ```bash
    npx prisma dev
    ```
+   **Important:** Copy the `DATABASE_URL` from the output and paste it into your `.env` file, replacing the existing `DATABASE_URL` value.
+   
    (Keep this running in a separate terminal)
 
 3. **Initialize the database** (first time only):
@@ -56,6 +58,7 @@ Default admin credentials (change after first login):
 ## Documentation
 
 - **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for setup instructions
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)** - 🔧 Solutions for common issues
 - [Deployment Guide](./DEPLOYMENT.md) - General deployment options
 - [Vercel Deployment](./VERCEL_DEPLOYMENT.md) - Vercel-specific setup
 - [Admin Setup](./ADMIN_SETUP.md) - Admin user management
