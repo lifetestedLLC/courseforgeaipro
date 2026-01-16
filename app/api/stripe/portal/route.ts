@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import stripe, { isStripeConfigured } from "@/lib/stripe";
+import { getBaseUrl } from "@/lib/url";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,10 +37,13 @@ export async function POST(request: NextRequest) {
       throw new Error("Stripe client not initialized");
     }
 
+    // Get the base URL from the request (handles custom domains)
+    const baseUrl = getBaseUrl(request);
+    
     // Create Stripe billing portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${process.env.NEXTAUTH_URL}/dashboard`,
+      return_url: `${baseUrl}/dashboard`,
     });
 
     return NextResponse.json({
