@@ -300,9 +300,9 @@ export default function AdminPage() {
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-600 mb-1">Environment</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {process.env.NODE_ENV || 'production'}
+              <div className="text-sm text-gray-600 mb-1">Platform Status</div>
+              <div className="text-lg font-semibold text-green-600">
+                Active
               </div>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
