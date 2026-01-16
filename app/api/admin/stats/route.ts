@@ -64,7 +64,10 @@ export async function GET(request: NextRequest) {
 
     logger.info("Admin fetched system stats", { 
       adminId: session.user.id,
-      stats 
+      totalUsers,
+      totalCourses,
+      totalVideos,
+      totalQuizzes
     });
 
     return NextResponse.json(stats);
