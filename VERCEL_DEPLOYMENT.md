@@ -12,6 +12,9 @@ DATABASE_URL=your_postgresql_connection_string
 
 # Authentication (Generate with: openssl rand -base64 32)
 NEXTAUTH_SECRET=your_generated_secret_here
+# IMPORTANT: Use your actual production domain with https://
+# Example: https://courseforgeai.org or https://www.courseforgeai.org
+# DO NOT use http:// or localhost in production
 NEXTAUTH_URL=https://your-domain.vercel.app
 
 # OpenAI API (Optional - for AI features)
