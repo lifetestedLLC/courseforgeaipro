@@ -1,10 +1,27 @@
 # Troubleshooting Guide
 
-## Database Connection Issues
+## 🚨 Production Deployment Issues
 
-### Error: "Can't reach database server" or "ECONNREFUSED"
+### Error: "Can't reach database server at 127.0.0.1" (on your live website)
 
-This is the most common issue and happens when the application can't connect to the database.
+If you see this error on your **production site** (e.g., www.courseforgeai.org):
+
+**Cause**: You're trying to use a local development database in production.
+
+**Solution**: You need a production PostgreSQL database.
+
+👉 **Quick Fix**: See [QUICK_FIX_PRODUCTION_DATABASE.md](./QUICK_FIX_PRODUCTION_DATABASE.md)  
+👉 **Detailed Guide**: See [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md)
+
+**Key Point**: Local database URLs (`prisma+postgres://localhost:...`) only work on your computer, not on deployed sites. Production requires a real PostgreSQL database (Vercel Postgres, Supabase, or Neon).
+
+---
+
+## Local Development Issues
+
+### Error: "Can't reach database server" or "ECONNREFUSED" (on localhost)
+
+This happens when the application can't connect to your **local** database.
 
 **Cause**: Your `DATABASE_URL` in the `.env` file doesn't match the ports where Prisma dev server is actually running.
 

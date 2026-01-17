@@ -1,9 +1,25 @@
 # Vercel Setup Instructions for courseforgeai.org
 
+## 🚨 Important: Database Setup Required!
+
+If you're seeing database connection errors like:
+- `Can't reach database server at 127.0.0.1:51214`
+- `Invalid prisma.user.findUnique() invocation`
+
+**You need to set up a production database first!**
+
+👉 **Follow this guide first:** [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md)
+
+The steps below cover authentication setup (NEXTAUTH_URL), but you **also need a production database** for the site to work. Both are required!
+
+---
+
 ## Your Specific Setup
 - **Platform**: Vercel
 - **Domain**: courseforgeai.org
-- **What needs to change**: NEXTAUTH_URL environment variable
+- **What needs to change**: 
+  1. DATABASE_URL environment variable (see [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md))
+  2. NEXTAUTH_URL environment variable (instructions below)
 
 ---
 
@@ -127,8 +143,10 @@ I recommend using `https://courseforgeai.org` (without www) as your NEXTAUTH_URL
 ### Common Error Messages
 
 **"Invalid credentials" even with correct password**:
-- This might be a database issue, not related to NEXTAUTH_URL
-- Check that your DATABASE_URL is also set correctly in Vercel
+- This is usually a database issue
+- Check that your DATABASE_URL is set correctly in Vercel
+- Make sure it's a production database URL (format: `postgresql://...`), not a local one
+- See [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md) for help
 
 **"Session expired" immediately after login**:
 - Make sure NEXTAUTH_SECRET is also set in Vercel
@@ -144,13 +162,15 @@ I recommend using `https://courseforgeai.org` (without www) as your NEXTAUTH_URL
 
 While you're in the Environment Variables section, make sure you have ALL of these set:
 
-1. ✅ **NEXTAUTH_URL** = `https://courseforgeai.org`
-2. ✅ **NEXTAUTH_SECRET** = (a long random string - should already be set)
-3. ✅ **DATABASE_URL** = (your database connection string - should already be set)
+1. ✅ **DATABASE_URL** = Your production PostgreSQL connection string (format: `postgresql://user:password@host:5432/database`)
+   - **NOT** a local URL like `prisma+postgres://localhost:...`
+   - See [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md) for detailed setup
+2. ✅ **NEXTAUTH_URL** = `https://courseforgeai.org` or `https://www.courseforgeai.org`
+3. ✅ **NEXTAUTH_SECRET** = (a long random string - should already be set)
 4. ⚠️ **OPENAI_API_KEY** = (optional, for AI features)
 5. ⚠️ **STRIPE_SECRET_KEY** = (optional, for payments)
 
-If any of the required ones (1-3) are missing, that could also cause login issues.
+**If you don't have DATABASE_URL set correctly, nothing will work!** This is the most common cause of issues.
 
 ---
 

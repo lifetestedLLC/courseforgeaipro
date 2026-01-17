@@ -2,6 +2,12 @@
 
 AI-powered course creation platform for educators and content creators.
 
+## 🚨 Production Deployment Issue?
+
+If your production site shows database connection errors, see:
+- **[Quick Fix Guide](./QUICK_FIX_PRODUCTION_DATABASE.md)** - ⚡ Fast 5-minute fix
+- **[Detailed Setup Guide](./PRODUCTION_DATABASE_SETUP.md)** - 📖 Comprehensive instructions
+
 ## Features
 
 - 🎓 **AI Course Generation** - Create comprehensive course outlines and content
@@ -45,7 +51,13 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 
 ## Deployment
 
-See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for detailed Vercel deployment instructions.
+**🚨 Deploying to production?** Make sure to set up a production database first!
+
+See:
+- **[Production Database Setup](./PRODUCTION_DATABASE_SETUP.md)** - 📖 Step-by-step guide for setting up production database
+- **[Vercel Deployment Guide](./VERCEL_DEPLOYMENT.md)** - Complete Vercel deployment instructions
+
+**Common Issue:** If sign-up or login doesn't work on your live site, you likely need to configure a production database. The local development database (`prisma+postgres://localhost:...`) won't work in production.
 
 ## Admin Setup
 
@@ -57,10 +69,13 @@ Default admin credentials (change after first login):
 
 ## Documentation
 
-- **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for setup instructions
+- **[Quick Fix: Production Database](./QUICK_FIX_PRODUCTION_DATABASE.md)** - ⚡ 5-minute production database fix
+- **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for local development setup
+- **[Production Database Setup](./PRODUCTION_DATABASE_SETUP.md)** - 🚀 Required for production deployment
 - **[Troubleshooting Guide](./TROUBLESHOOTING.md)** - 🔧 Solutions for common issues
 - [Deployment Guide](./DEPLOYMENT.md) - General deployment options
 - [Vercel Deployment](./VERCEL_DEPLOYMENT.md) - Vercel-specific setup
+- [Vercel CourseForge Setup](./VERCEL_COURSEFORGEAI_SETUP.md) - Domain-specific setup for courseforgeai.org
 - [Admin Setup](./ADMIN_SETUP.md) - Admin user management
 - [Authentication](./AUTH_IMPLEMENTATION.md) - Authentication setup
 - [Database](./DATABASE_IMPLEMENTATION.md) - Database schema and setup
