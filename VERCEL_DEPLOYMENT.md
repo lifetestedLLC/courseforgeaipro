@@ -1,5 +1,22 @@
 # Vercel Deployment Guide
 
+## 🚨 Getting Database Connection Errors in Production?
+
+If you're seeing errors like:
+- `Can't reach database server at 127.0.0.1:51214`
+- `Invalid prisma.user.findUnique() invocation`
+- Sign-up or login not working on your production site
+
+**👉 Follow the comprehensive guide: [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md)**
+
+This guide walks you through:
+- Setting up a production PostgreSQL database (Vercel Postgres, Supabase, or Neon)
+- Configuring environment variables correctly
+- Running database migrations
+- Troubleshooting common issues
+
+---
+
 ## Important Configuration for Vercel
 
 ### Environment Variables Required
@@ -8,7 +25,11 @@ Add these environment variables in your Vercel project settings:
 
 ```env
 # Database
-DATABASE_URL=your_postgresql_connection_string
+# IMPORTANT: Use a production PostgreSQL connection string
+# Format: postgresql://user:password@host:5432/database?sslmode=require
+# DO NOT use prisma+postgres://localhost URLs in production!
+# See PRODUCTION_DATABASE_SETUP.md for detailed instructions
+DATABASE_URL=postgresql://user:password@host:5432/database
 
 # Authentication (Generate with: openssl rand -base64 32)
 NEXTAUTH_SECRET=your_generated_secret_here
@@ -40,12 +61,23 @@ Vercel should automatically detect these settings, but verify:
 
 ### Database Setup
 
+**⚠️ Critical: Production requires a real PostgreSQL database, not the local Prisma dev database!**
+
+**Quick Start:**
 1. Set up a PostgreSQL database (recommend: Vercel Postgres, Supabase, or Neon)
-2. Add the `DATABASE_URL` to Vercel environment variables
-3. Run migrations after deployment:
+2. Get the connection string (format: `postgresql://user:password@host:5432/database`)
+3. Add the `DATABASE_URL` to Vercel environment variables
+4. Run migrations to create tables:
    ```bash
    npx prisma db push
    ```
+
+**📖 Detailed Instructions:** See [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md) for step-by-step setup with screenshots and troubleshooting.
+
+**Important Notes:**
+- ❌ Local development URL format: `prisma+postgres://localhost:51213/?api_key=...` (works on localhost only)
+- ✅ Production URL format: `postgresql://user:password@host:5432/database` (works on your live site)
+- You CANNOT use local Prisma dev URLs in production - they only work on your computer!
 
 ### Admin User Setup
 
@@ -84,9 +116,15 @@ After successful deployment:
 
 #### Database Connection Issues
 
-- **Issue**: "Can't reach database server"
+- **Issue**: "Can't reach database server at 127.0.0.1" or "Can't reach database server at localhost"
+  - **Root Cause**: Using a local development database URL in production
+  - **Solution**: Follow [PRODUCTION_DATABASE_SETUP.md](./PRODUCTION_DATABASE_SETUP.md) to set up a production database
+  - **Key Point**: The `prisma+postgres://localhost:...` URL format ONLY works for local development, not production
+  
+- **Issue**: "Can't reach database server" with a remote host
   - **Solution**: Check DATABASE_URL format and network settings
   - Ensure your database allows connections from Vercel's IP ranges
+  - Verify the connection string is correct (no typos, correct password)
 
 #### Authentication Issues
 
