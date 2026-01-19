@@ -12,7 +12,10 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "admin:verify": "tsx scripts/verify-admin-tier-system.ts",
+    "admin:diagnose": "tsx scripts/diagnose-admin.ts",
+    "admin:fix-role": "tsx scripts/fix-admin-role.ts"
   },
   "description": "AI Course and creation website",
   "dependencies": {
