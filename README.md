@@ -13,9 +13,10 @@ If your production site shows database connection errors, see:
 - 🎓 **AI Course Generation** - Create comprehensive course outlines and content
 - 🎥 **AI Video Creation** - Generate professional videos with AI
 - 📝 **Interactive Quizzes** - Build assessments automatically
+- 🎨 **Design Templates** - 14 professionally designed templates with custom fonts and clip art for beautiful PDF exports
 - 🔗 **Platform Integrations** - Export to Coursera, Udemy, Teachable, and more
 - 📊 **Creator Dashboard** - Manage all your courses in one place
-- 💰 **Affordable Pricing** - Plans starting at $19/month with free trial
+- 💰 **Subscription Tiers** - Free, Starter ($19), Professional ($49), and Enterprise ($99) plans with increasing template access
 
 ## Getting Started
 
@@ -72,6 +73,7 @@ Default admin credentials (change after first login):
 - **[Quick Fix: Production Database](./QUICK_FIX_PRODUCTION_DATABASE.md)** - ⚡ 5-minute production database fix
 - **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for local development setup
 - **[Production Database Setup](./PRODUCTION_DATABASE_SETUP.md)** - 🚀 Required for production deployment
+- **[Templates Documentation](./TEMPLATES_DOCUMENTATION.md)** - 🎨 Course design templates guide
 - **[Troubleshooting Guide](./TROUBLESHOOTING.md)** - 🔧 Solutions for common issues
 - [Deployment Guide](./DEPLOYMENT.md) - General deployment options
 - [Vercel Deployment](./VERCEL_DEPLOYMENT.md) - Vercel-specific setup
