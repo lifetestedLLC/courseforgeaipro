@@ -260,13 +260,13 @@ export default function AccountClient() {
               <div className="flex justify-between items-center pb-4 border-b border-white border-opacity-20">
                 <div>
                   <div className="font-bold text-white mb-1">Change Password</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Update your password regularly for security
                   </div>
                 </div>
                 <Link
                   href="/settings"
-                  className="px-4 py-2 bg-white bg-opacity-20 text-white rounded-lg hover:bg-opacity-30 transition font-medium"
+                  className="px-4 py-2 bg-white text-purple-600 rounded-lg hover:bg-opacity-90 transition font-bold"
                 >
                   Update
                 </Link>
@@ -275,7 +275,7 @@ export default function AccountClient() {
               <div className="flex justify-between items-center pb-4 border-b border-white border-opacity-20">
                 <div>
                   <div className="font-bold text-white mb-1">Subscription Plan</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     {currentUser?.subscriptionTier 
                       ? `${currentUser.subscriptionTier} Plan`
                       : 'Free Plan'} - {currentUser?.subscriptionStatus || 'Upgrade for more features'}
@@ -292,13 +292,13 @@ export default function AccountClient() {
               <div className="flex justify-between items-center">
                 <div>
                   <div className="font-bold text-white mb-1">Delete Account</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Permanently delete your account and data
                   </div>
                 </div>
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="px-4 py-2 bg-red-500 bg-opacity-80 text-white rounded-lg hover:bg-opacity-100 transition font-medium"
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-bold"
                 >
                   Delete
                 </button>

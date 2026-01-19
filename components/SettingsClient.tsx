@@ -154,13 +154,13 @@ export default function SettingsClient() {
               <div className="flex justify-between items-center">
                 <div>
                   <div className="font-bold text-white mb-1">Two-Factor Authentication</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Add an extra layer of security to your account
                   </div>
                 </div>
                 <button
                   disabled
-                  className="px-4 py-2 bg-white bg-opacity-20 text-white rounded-lg opacity-50 cursor-not-allowed font-medium"
+                  className="px-4 py-2 bg-gray-400 text-gray-700 rounded-lg cursor-not-allowed font-bold"
                 >
                   Coming Soon
                 </button>
@@ -176,7 +176,7 @@ export default function SettingsClient() {
               <label className="flex justify-between items-center cursor-pointer p-4 bg-white bg-opacity-5 rounded-lg hover:bg-opacity-10 transition">
                 <div>
                   <div className="font-bold text-white mb-1">Email Notifications</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Receive updates via email
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export default function SettingsClient() {
               <label className="flex justify-between items-center cursor-pointer p-4 bg-white bg-opacity-5 rounded-lg hover:bg-opacity-10 transition">
                 <div>
                   <div className="font-bold text-white mb-1">Course Updates</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Get notified about course changes
                   </div>
                 </div>
@@ -206,7 +206,7 @@ export default function SettingsClient() {
               <label className="flex justify-between items-center cursor-pointer p-4 bg-white bg-opacity-5 rounded-lg hover:bg-opacity-10 transition">
                 <div>
                   <div className="font-bold text-white mb-1">Marketing Emails</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Receive tips and promotional content
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export default function SettingsClient() {
               <label className="flex justify-between items-center cursor-pointer p-4 bg-white bg-opacity-5 rounded-lg hover:bg-opacity-10 transition">
                 <div>
                   <div className="font-bold text-white mb-1">Weekly Progress Reports</div>
-                  <div className="text-sm text-white text-opacity-80">
+                  <div className="text-sm text-white text-opacity-90">
                     Get weekly summaries of your learning
                   </div>
                 </div>
@@ -233,7 +233,7 @@ export default function SettingsClient() {
               </label>
             </div>
 
-            <p className="mt-4 text-sm text-white text-opacity-70 italic">
+            <p className="mt-4 text-sm text-white text-opacity-90 italic">
               Note: Notification preferences will be saved in a future update
             </p>
           </div>
