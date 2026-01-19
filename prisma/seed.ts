@@ -9,6 +9,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import { getDirectDatabaseUrl } from '../lib/db-config';
+import { TEMPLATE_CONFIGS } from '../lib/templates';
 
 // Get the direct PostgreSQL connection URL from environment
 const directDbUrl = getDirectDatabaseUrl();
@@ -63,6 +64,35 @@ async function main() {
   console.log(`User ID: ${admin.id}`);
   console.log('-----------------------------------');
   console.log('⚠️  IMPORTANT: Change the admin password after first login!');
+
+  // Seed templates
+  console.log('\nSeeding templates...');
+  
+  // Check if templates already exist
+  const existingTemplatesCount = await prisma.template.count();
+  
+  if (existingTemplatesCount > 0) {
+    console.log(`Templates already seeded (${existingTemplatesCount} templates exist)`);
+  } else {
+    // Create templates from configuration
+    for (const templateConfig of TEMPLATE_CONFIGS) {
+      await prisma.template.create({
+        data: {
+          name: templateConfig.name,
+          description: templateConfig.description,
+          category: templateConfig.category,
+          tier: templateConfig.tier,
+          thumbnail: templateConfig.thumbnail,
+          fonts: templateConfig.fonts as any,
+          colors: templateConfig.colors as any,
+          clipArt: templateConfig.clipArt as any,
+          layout: templateConfig.layout as any,
+          isActive: true,
+        },
+      });
+    }
+    console.log(`✅ ${TEMPLATE_CONFIGS.length} templates seeded successfully!`);
+  }
 }
 
 main()

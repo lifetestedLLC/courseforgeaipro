@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { TEMPLATE_CONFIGS, hasAccessToTemplate } from '@/lib/templates';
+import { hasAccessToTemplate } from '@/lib/templates';
+import { prisma } from '@/lib/prisma';
 import type { SubscriptionTier } from '@/types/template';
 
 export async function GET(request: NextRequest) {
@@ -15,29 +16,46 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user's subscription tier from session or database
-    // For now, we'll use a default tier, but this should be fetched from the user's record
-    const userTier: SubscriptionTier = 'free'; // This would come from the authenticated user
+    // Get user's subscription tier from database
+    const user = await prisma.user.findUnique({
+      where: { email: session.user?.email! },
+      select: { subscriptionTier: true },
+    });
+
+    const userTier: SubscriptionTier = (user?.subscriptionTier as SubscriptionTier) || 'free';
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
     const category = searchParams.get('category');
     const showAll = searchParams.get('showAll') === 'true';
 
-    // Filter templates
-    let templates = TEMPLATE_CONFIGS;
-
-    // Filter by category if specified
+    // Build query
+    const whereClause: any = { isActive: true };
     if (category) {
-      templates = templates.filter(t => t.category === category);
+      whereClause.category = category;
     }
+
+    // Fetch templates from database
+    const templates = await prisma.template.findMany({
+      where: whereClause,
+      orderBy: [
+        { tier: 'asc' },
+        { name: 'asc' },
+      ],
+    });
 
     // Add access information to each template
     const templatesWithAccess = templates.map(template => ({
       ...template,
-      hasAccess: hasAccessToTemplate(userTier, template.tier),
-      requiresUpgrade: !hasAccessToTemplate(userTier, template.tier),
-      upgradeToTier: !hasAccessToTemplate(userTier, template.tier) ? template.tier : undefined,
+      fonts: template.fonts as any,
+      colors: template.colors as any,
+      clipArt: template.clipArt as any,
+      layout: template.layout as any,
+      hasAccess: hasAccessToTemplate(userTier, template.tier as SubscriptionTier),
+      requiresUpgrade: !hasAccessToTemplate(userTier, template.tier as SubscriptionTier),
+      upgradeToTier: !hasAccessToTemplate(userTier, template.tier as SubscriptionTier) 
+        ? template.tier 
+        : undefined,
     }));
 
     // If showAll is false, only return accessible templates

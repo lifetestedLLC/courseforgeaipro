@@ -175,8 +175,6 @@ export default function Subscription() {
                 Priority support
               </li>
             </ul>
-              </li>
-            </ul>
 
             <button style={{
               width: '100%',

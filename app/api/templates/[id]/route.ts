@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { TEMPLATE_CONFIGS, hasAccessToTemplate } from '@/lib/templates';
+import { hasAccessToTemplate } from '@/lib/templates';
+import { prisma } from '@/lib/prisma';
 import type { SubscriptionTier } from '@/types/template';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -18,31 +19,39 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
-    // Get user's subscription tier
-    const userTier: SubscriptionTier = 'free'; // This should come from the user's record
+    // Get user's subscription tier from database
+    const user = await prisma.user.findUnique({
+      where: { email: session.user?.email! },
+      select: { subscriptionTier: true },
+    });
 
-    // Find template by index (using array index as ID for now)
-    const templateIndex = parseInt(id);
+    const userTier: SubscriptionTier = (user?.subscriptionTier as SubscriptionTier) || 'free';
+
+    // Find template by ID
+    const template = await prisma.template.findUnique({
+      where: { id },
+    });
     
-    if (isNaN(templateIndex) || templateIndex < 0 || templateIndex >= TEMPLATE_CONFIGS.length) {
+    if (!template) {
       return NextResponse.json(
         { error: 'Template not found' },
         { status: 404 }
       );
     }
 
-    const template = TEMPLATE_CONFIGS[templateIndex];
-
     // Check access
-    const hasAccess = hasAccessToTemplate(userTier, template.tier);
+    const hasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier);
 
     return NextResponse.json({
       success: true,
       template: {
         ...template,
-        id: templateIndex.toString(),
+        fonts: template.fonts as any,
+        colors: template.colors as any,
+        clipArt: template.clipArt as any,
+        layout: template.layout as any,
         hasAccess,
         requiresUpgrade: !hasAccess,
         upgradeToTier: !hasAccess ? template.tier : undefined,
