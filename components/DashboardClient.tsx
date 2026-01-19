@@ -144,9 +144,9 @@ export default function DashboardClient() {
                   Admin
                 </Link>
               )}
-              <button className="p-2 text-gray-600 hover:text-primary-600">
+              <Link href="/settings" className="p-2 text-gray-600 hover:text-primary-600">
                 <Settings className="w-5 h-5" />
-              </button>
+              </Link>
               <button 
                 onClick={handleSignOut}
                 className="flex items-center text-gray-600 hover:text-primary-600"
