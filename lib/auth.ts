@@ -101,7 +101,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session?.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        // Ensure role is always set, defaulting to 'user' if undefined
+        session.user.role = (token.role as string | undefined) || 'user';
       }
       return session;
     }
