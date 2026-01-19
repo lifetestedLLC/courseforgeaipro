@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Add access information to each template
-    // Note: hasAccessToTemplate uses raw userTier + userRole and internally
-    // handles admin privileges via hasAccessToTier function
     const templatesWithAccess = templates.map(template => {
+      // Note: hasAccessToTemplate uses raw userTier + userRole and internally
+      // handles admin privileges via hasAccessToTier function
       const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
       return {
         ...template,
@@ -79,7 +79,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       templates: filteredTemplates,
-      userTier: effectiveTier, // Return effective tier for display
+      userTier: effectiveTier, // Effective tier for display (enterprise for admins)
+      actualTier: userTier, // Raw subscription tier from database
       total: filteredTemplates.length,
     });
 
