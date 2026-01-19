@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUser } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,18 @@ export async function POST(request: NextRequest) {
       userId: user.id, 
       email: user.email 
     });
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(user.email, user.name || 'Friend')
+      .then(() => {
+        logger.info("Welcome email sent", { email: user.email });
+      })
+      .catch((error) => {
+        logger.error("Failed to send welcome email", error as Error, { 
+          email: user.email 
+        });
+        // Don't fail registration if email fails
+      });
 
     return NextResponse.json(
       { 
