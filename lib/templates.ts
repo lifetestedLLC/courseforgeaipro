@@ -1,4 +1,5 @@
 import type { TemplateFonts, TemplateColors, TemplateClipArt, TemplateLayout, SubscriptionTier, TemplateCategory } from '@/types/template';
+import { hasAccessToTier } from '@/lib/subscription';
 
 export interface TemplateConfig {
   name: string;
@@ -404,12 +405,12 @@ export function getTemplatesByCategory(category: TemplateCategory): TemplateConf
 }
 
 // Helper function to check if user has access to template
-export function hasAccessToTemplate(userTier: SubscriptionTier | null | undefined, templateTier: SubscriptionTier): boolean {
-  if (!userTier) return templateTier === 'free';
-  
-  const tierHierarchy: SubscriptionTier[] = ['free', 'starter', 'professional', 'enterprise'];
-  const userTierIndex = tierHierarchy.indexOf(userTier);
-  const templateTierIndex = tierHierarchy.indexOf(templateTier);
-  
-  return templateTierIndex <= userTierIndex;
+export function hasAccessToTemplate(
+  userTier: SubscriptionTier | null | undefined, 
+  templateTier: SubscriptionTier,
+  userRole?: string | null | undefined
+): boolean {
+  // Use the subscription utility for tier access checking
+  // This automatically gives admins access to all templates
+  return hasAccessToTier(userTier, userRole, templateTier);
 }
