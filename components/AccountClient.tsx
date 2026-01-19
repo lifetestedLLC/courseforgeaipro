@@ -15,6 +15,7 @@ interface CurrentUser {
   role?: string;
   subscriptionTier: SubscriptionTier | null;
   subscriptionStatus: string | null;
+  effectiveTier?: SubscriptionTier; // Added: effective tier from API
 }
 
 export default function AccountClient() {

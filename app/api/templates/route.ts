@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { hasAccessToTemplate } from '@/lib/templates';
+import { getEffectiveTier } from '@/lib/subscription';
 import { prisma } from '@/lib/prisma';
 import type { SubscriptionTier } from '@/types/template';
 
@@ -27,6 +28,9 @@ export async function GET(request: NextRequest) {
 
     const userTier: SubscriptionTier = (user?.subscriptionTier as SubscriptionTier) || 'free';
     const userRole = user?.role;
+    
+    // Get effective tier for display (admins get enterprise tier)
+    const effectiveTier = getEffectiveTier(userTier, userRole);
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -73,7 +77,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       templates: filteredTemplates,
-      userTier,
+      userTier: effectiveTier, // Return effective tier for display
       total: filteredTemplates.length,
     });
 
