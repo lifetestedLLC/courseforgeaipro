@@ -12,7 +12,7 @@ interface CurrentUser {
   id: string;
   email: string;
   name: string | null;
-  role: string;
+  role?: string;
   subscriptionTier: SubscriptionTier | null;
   subscriptionStatus: string | null;
 }
@@ -44,7 +44,14 @@ export default function AccountClient() {
       return `${tierDisplay} Plan (Admin - Unlimited Access)`;
     }
     
-    return `${tierDisplay} Plan - ${currentUser.subscriptionStatus || 'Upgrade for more features'}`;
+    // Show subscription status or a helpful message
+    const statusText = currentUser.subscriptionStatus 
+      ? currentUser.subscriptionStatus 
+      : effectiveTier === 'free' 
+        ? 'Upgrade for more features' 
+        : 'Active subscription';
+    
+    return `${tierDisplay} Plan - ${statusText}`;
   }, [currentUser]);
 
   useEffect(() => {
