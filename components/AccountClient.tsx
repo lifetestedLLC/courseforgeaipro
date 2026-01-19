@@ -2,14 +2,25 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { getEffectiveTier } from '@/lib/subscription';
+import type { SubscriptionTier } from '@/types/template';
+
+interface CurrentUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role?: string;
+  subscriptionTier: SubscriptionTier | null;
+  subscriptionStatus: string | null;
+}
 
 export default function AccountClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +31,28 @@ export default function AccountClient() {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [showEmailChange, setShowEmailChange] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Compute subscription plan display text
+  const subscriptionPlanText = useMemo(() => {
+    if (!currentUser) return '';
+    
+    const effectiveTier = getEffectiveTier(currentUser.subscriptionTier, currentUser.role);
+    const tierDisplay = effectiveTier.charAt(0).toUpperCase() + effectiveTier.slice(1);
+    const isAdmin = currentUser.role === 'admin';
+    
+    if (isAdmin) {
+      return `${tierDisplay} Plan (Admin - Unlimited Access)`;
+    }
+    
+    // Show subscription status or a helpful message
+    const statusText = currentUser.subscriptionStatus 
+      ? currentUser.subscriptionStatus 
+      : effectiveTier === 'free' 
+        ? 'Upgrade for more features' 
+        : 'Active subscription';
+    
+    return `${tierDisplay} Plan - ${statusText}`;
+  }, [currentUser]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -276,9 +309,7 @@ export default function AccountClient() {
                 <div>
                   <div className="font-bold text-white mb-1">Subscription Plan</div>
                   <div className="text-sm text-white text-opacity-90">
-                    {currentUser?.subscriptionTier 
-                      ? `${currentUser.subscriptionTier} Plan`
-                      : 'Free Plan'} - {currentUser?.subscriptionStatus || 'Upgrade for more features'}
+                    {subscriptionPlanText}
                   </div>
                 </div>
                 <Link
