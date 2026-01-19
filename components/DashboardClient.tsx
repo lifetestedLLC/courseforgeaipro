@@ -100,8 +100,20 @@ export default function DashboardClient() {
     );
   }
 
-  if (!session || !dashboardData) {
+  if (!session) {
     return null;
+  }
+
+  // Show loading state if data hasn't been fetched yet
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   const handleSignOut = async () => {
@@ -338,9 +350,11 @@ function CourseItem({
   status: string, 
   updatedAt: string
 }) {
-  const statusColor = {
-    'published': 'bg-green-100 text-green-800',
-    'draft': 'bg-yellow-100 text-yellow-800',
+  const getStatusColor = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
+    if (normalizedStatus === 'published') return 'bg-green-100 text-green-800';
+    if (normalizedStatus === 'draft') return 'bg-yellow-100 text-yellow-800';
+    return 'bg-gray-100 text-gray-800';
   };
 
   const statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
@@ -364,13 +378,19 @@ function CourseItem({
         <div className="flex-1">
           <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
           {description && (
-            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{description}</p>
+            <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{ 
+              display: '-webkit-box', 
+              WebkitLineClamp: 2, 
+              WebkitBoxOrient: 'vertical' 
+            }}>
+              {description}
+            </p>
           )}
           <div className="text-xs text-gray-500">
             Updated {formatDate(updatedAt)}
           </div>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-4 ${statusColor[status.toLowerCase() as keyof typeof statusColor] || 'bg-gray-100 text-gray-800'}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-4 ${getStatusColor(status)}`}>
           {statusDisplay}
         </span>
       </div>
