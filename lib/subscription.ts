@@ -74,8 +74,8 @@ export function hasUnlimitedUsage(
     return true;
   }
 
-  // Quizzes are unlimited for all tiers (except free)
-  if (feature === 'quizzes' && userTier) {
+  // Quizzes are unlimited for all paid tiers (starter, professional, enterprise)
+  if (feature === 'quizzes' && userTier && userTier !== 'free') {
     return true;
   }
 
