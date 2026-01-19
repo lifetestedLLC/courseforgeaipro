@@ -144,7 +144,7 @@ export default function DashboardClient() {
                   Admin
                 </Link>
               )}
-              <Link href="/settings" className="p-2 text-gray-600 hover:text-primary-600">
+              <Link href="/settings" className="p-2 text-gray-600 hover:text-primary-600" aria-label="Account Settings">
                 <Settings className="w-5 h-5" />
               </Link>
               <button 
