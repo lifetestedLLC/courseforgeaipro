@@ -55,7 +55,8 @@ export default function SettingsClient() {
         setMessage({ type: 'error', text: data.error || 'Failed to change password' });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred' });
+      console.error('Password change error:', error);
+      setMessage({ type: 'error', text: 'Failed to change password. Please try again.' });
     } finally {
       setLoading(false);
     }

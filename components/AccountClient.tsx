@@ -69,7 +69,8 @@ export default function AccountClient() {
         setMessage({ type: 'error', text: data.error || 'Failed to update profile' });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred' });
+      console.error('Profile update error:', error);
+      setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,8 @@ export default function AccountClient() {
         setMessage({ type: 'error', text: data.error || 'Failed to change email' });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred' });
+      console.error('Email change error:', error);
+      setMessage({ type: 'error', text: 'Failed to change email. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -124,7 +126,8 @@ export default function AccountClient() {
         setMessage({ type: 'error', text: data.error || 'Failed to delete account' });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred' });
+      console.error('Account deletion error:', error);
+      setMessage({ type: 'error', text: 'Failed to delete account. Please try again.' });
     } finally {
       setLoading(false);
     }
