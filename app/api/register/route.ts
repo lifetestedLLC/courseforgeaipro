@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Send welcome email (non-blocking)
-    sendWelcomeEmail(user.email, user.name || 'there')
+    sendWelcomeEmail(user.email, user.name || 'Friend')
       .then(() => {
         logger.info("Welcome email sent", { email: user.email });
       })

@@ -66,6 +66,11 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
 export async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   const subject = 'Welcome to CourseForge AI! 🎉';
   
+  // Sanitize the base URL to prevent XSS
+  const baseUrl = (process.env.NEXTAUTH_URL || 'https://courseforgeai.org')
+    .replace(/[<>"']/g, '') // Remove potentially dangerous characters
+    .trim();
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -158,7 +163,7 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<voi
           </ul>
           
           <div style="text-align: center;">
-            <a href="${process.env.NEXTAUTH_URL || 'https://courseforgeai.org'}/dashboard" class="button">
+            <a href="${baseUrl}/dashboard" class="button">
               Get Started Now
             </a>
           </div>
@@ -177,7 +182,7 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<voi
         <div class="footer">
           <p>
             CourseForge AI - AI-Powered Course Creation<br>
-            <a href="${process.env.NEXTAUTH_URL || 'https://courseforgeai.org'}" style="color: #667eea;">courseforgeai.org</a>
+            <a href="${baseUrl}" style="color: #667eea;">courseforgeai.org</a>
           </p>
         </div>
       </body>
@@ -197,7 +202,7 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<voi
     - Build interactive quizzes and assessments
     - Export to popular platforms like Coursera, Udemy, and more
 
-    Get started now: ${process.env.NEXTAUTH_URL || 'https://courseforgeai.org'}/dashboard
+    Get started now: ${baseUrl}/dashboard
 
     Need help? Check out our documentation or reach out to our support team.
 
