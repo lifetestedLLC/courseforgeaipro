@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { getEffectiveTier } from '@/lib/subscription';
@@ -13,7 +13,7 @@ interface CurrentUser {
   email: string;
   name: string | null;
   role: string;
-  subscriptionTier: string | null;
+  subscriptionTier: SubscriptionTier | null;
   subscriptionStatus: string | null;
 }
 
@@ -31,6 +31,21 @@ export default function AccountClient() {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [showEmailChange, setShowEmailChange] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Compute subscription plan display text
+  const subscriptionPlanText = useMemo(() => {
+    if (!currentUser) return '';
+    
+    const effectiveTier = getEffectiveTier(currentUser.subscriptionTier, currentUser.role);
+    const tierDisplay = effectiveTier.charAt(0).toUpperCase() + effectiveTier.slice(1);
+    const isAdmin = currentUser.role === 'admin';
+    
+    if (isAdmin) {
+      return `${tierDisplay} Plan (Admin - Unlimited Access)`;
+    }
+    
+    return `${tierDisplay} Plan - ${currentUser.subscriptionStatus || 'Upgrade for more features'}`;
+  }, [currentUser]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -287,22 +302,7 @@ export default function AccountClient() {
                 <div>
                   <div className="font-bold text-white mb-1">Subscription Plan</div>
                   <div className="text-sm text-white text-opacity-90">
-                    {(() => {
-                      const effectiveTier = getEffectiveTier(
-                        (currentUser?.subscriptionTier as SubscriptionTier) || null,
-                        currentUser?.role
-                      );
-                      const tierDisplay = effectiveTier.charAt(0).toUpperCase() + effectiveTier.slice(1);
-                      const isAdmin = currentUser?.role === 'admin';
-                      
-                      return (
-                        <>
-                          {tierDisplay} Plan
-                          {isAdmin && ' (Admin - Unlimited Access)'}
-                          {!isAdmin && ` - ${currentUser?.subscriptionStatus || 'Upgrade for more features'}`}
-                        </>
-                      );
-                    })()}
+                    {subscriptionPlanText}
                   </div>
                 </div>
                 <Link

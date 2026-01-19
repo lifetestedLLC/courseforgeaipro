@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         // Fetch user role from database only when first creating the token
         // The role will persist in the token and won't be fetched again on subsequent calls
-        if (!token.role) {
+        if (token.role === undefined) {
           try {
             const dbUser = await prisma.user.findUnique({
               where: { id: user.id },
