@@ -21,13 +21,17 @@ export async function GET(
 
     const { id } = await params;
 
-    // Get user's subscription tier from database
+    // Get user's subscription tier and role from database
     const user = await prisma.user.findUnique({
       where: { email: session.user?.email! },
-      select: { subscriptionTier: true },
+      select: { 
+        subscriptionTier: true,
+        role: true,
+      },
     });
 
     const userTier: SubscriptionTier = (user?.subscriptionTier as SubscriptionTier) || 'free';
+    const userRole = user?.role;
 
     // Find template by ID
     const template = await prisma.template.findUnique({
@@ -42,7 +46,7 @@ export async function GET(
     }
 
     // Check access
-    const hasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier);
+    const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
 
     return NextResponse.json({
       success: true,
@@ -52,9 +56,9 @@ export async function GET(
         colors: template.colors as any,
         clipArt: template.clipArt as any,
         layout: template.layout as any,
-        hasAccess,
-        requiresUpgrade: !hasAccess,
-        upgradeToTier: !hasAccess ? template.tier : undefined,
+        hasAccess: userHasAccess,
+        requiresUpgrade: !userHasAccess,
+        upgradeToTier: !userHasAccess ? template.tier : undefined,
       },
     });
 

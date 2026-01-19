@@ -16,13 +16,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user's subscription tier from database
+    // Get user's subscription tier and role from database
     const user = await prisma.user.findUnique({
       where: { email: session.user?.email! },
-      select: { subscriptionTier: true },
+      select: { 
+        subscriptionTier: true,
+        role: true,
+      },
     });
 
     const userTier: SubscriptionTier = (user?.subscriptionTier as SubscriptionTier) || 'free';
+    const userRole = user?.role;
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -45,18 +49,21 @@ export async function GET(request: NextRequest) {
     });
 
     // Add access information to each template
-    const templatesWithAccess = templates.map(template => ({
-      ...template,
-      fonts: template.fonts as any,
-      colors: template.colors as any,
-      clipArt: template.clipArt as any,
-      layout: template.layout as any,
-      hasAccess: hasAccessToTemplate(userTier, template.tier as SubscriptionTier),
-      requiresUpgrade: !hasAccessToTemplate(userTier, template.tier as SubscriptionTier),
-      upgradeToTier: !hasAccessToTemplate(userTier, template.tier as SubscriptionTier) 
-        ? template.tier 
-        : undefined,
-    }));
+    const templatesWithAccess = templates.map(template => {
+      const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
+      return {
+        ...template,
+        fonts: template.fonts as any,
+        colors: template.colors as any,
+        clipArt: template.clipArt as any,
+        layout: template.layout as any,
+        hasAccess: userHasAccess,
+        requiresUpgrade: !userHasAccess,
+        upgradeToTier: !userHasAccess 
+          ? template.tier 
+          : undefined,
+      };
+    });
 
     // If showAll is false, only return accessible templates
     const filteredTemplates = showAll 
