@@ -100,7 +100,7 @@ VALUES (
   'admin-' || gen_random_uuid()::text,
   'admin@courseforgeai.org',
   'Admin User',
-  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIr.vmXQW2',
+  '$2b$12$XBQhWxATC27uDwk8ri69Xe05Xjcd/Uu04vOj7gH8Eaw7Dfb51eh1y', -- Password: Admin123! (bcrypt hash)
   'admin',
   NOW(),
   NOW(),

@@ -177,7 +177,7 @@ If the CLI method doesn't work, you can run SQL directly:
      'admin-' || gen_random_uuid()::text,
      'admin@courseforgeai.org',
      'Admin User',
-     '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIr.vmXQW2', -- Password: Admin123!
+     '$2b$12$XBQhWxATC27uDwk8ri69Xe05Xjcd/Uu04vOj7gH8Eaw7Dfb51eh1y', -- Password: Admin123! (bcrypt hash)
      'admin',
      NOW(),
      NOW(),
@@ -249,6 +249,32 @@ You need to run migrations (see Step 3 above). The database is connected but emp
 ### "Admin user not found"
 
 Run the seed script (see Step 3 above) or create the admin user manually with SQL.
+
+### "Admin login fails with incorrect password"
+
+If you created the admin user before this documentation was fixed, the password hash might be incorrect.
+
+**Solution - Update the admin user password:**
+
+1. Connect to your database using the provider's SQL editor
+2. Run this SQL to update the admin password:
+   ```sql
+   UPDATE "User"
+   SET password = '$2b$12$XBQhWxATC27uDwk8ri69Xe05Xjcd/Uu04vOj7gH8Eaw7Dfb51eh1y'
+   WHERE email = 'admin@courseforgeai.org';
+   ```
+3. Try logging in again with:
+   - Email: `admin@courseforgeai.org`
+   - Password: `Admin123!`
+
+**Alternative - Generate a custom password hash:**
+
+If you want to use a different password:
+```bash
+# In your local project
+npx tsx -e "import bcrypt from 'bcryptjs'; bcrypt.hash('YourPasswordHere', 12).then(h => console.log(h));"
+```
+Then use the generated hash in the UPDATE query above.
 
 ### "Environment variable not found"
 
