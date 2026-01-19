@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { getEffectiveTier } from '@/lib/subscription';
+import type { SubscriptionTier } from '@/types/template';
 
 export default function AccountClient() {
   const { data: session, status } = useSession();
@@ -276,9 +278,22 @@ export default function AccountClient() {
                 <div>
                   <div className="font-bold text-white mb-1">Subscription Plan</div>
                   <div className="text-sm text-white text-opacity-90">
-                    {currentUser?.subscriptionTier 
-                      ? `${currentUser.subscriptionTier} Plan`
-                      : 'Free Plan'} - {currentUser?.subscriptionStatus || 'Upgrade for more features'}
+                    {(() => {
+                      const effectiveTier = getEffectiveTier(
+                        currentUser?.subscriptionTier as SubscriptionTier | null | undefined,
+                        currentUser?.role
+                      );
+                      const tierDisplay = effectiveTier.charAt(0).toUpperCase() + effectiveTier.slice(1);
+                      const isAdmin = currentUser?.role === 'admin';
+                      
+                      return (
+                        <>
+                          {tierDisplay} Plan
+                          {isAdmin && ' (Admin - Unlimited Access)'}
+                          {!isAdmin && ` - ${currentUser?.subscriptionStatus || 'Upgrade for more features'}`}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
                 <Link
