@@ -85,15 +85,19 @@ export default function Subscription() {
               </li>
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '0.5rem' }}>✓</span>
+                2 basic templates
+              </li>
+              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '0.5rem' }}>✓</span>
                 Community support
               </li>
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', opacity: 0.5 }}>
                 <span style={{ marginRight: '0.5rem' }}>✗</span>
-                Advanced analytics
+                Premium templates
               </li>
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', opacity: 0.5 }}>
                 <span style={{ marginRight: '0.5rem' }}>✗</span>
-                Priority support
+                Custom fonts & clip art
               </li>
             </ul>
 
@@ -160,15 +164,17 @@ export default function Subscription() {
               </li>
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '0.5rem' }}>✓</span>
+                3 starter templates + Google Fonts
+              </li>
+              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '0.5rem' }}>✓</span>
+                Basic clip art library
+              </li>
+              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '0.5rem' }}>✓</span>
                 Priority support
               </li>
-              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: '0.5rem' }}>✓</span>
-                Advanced analytics
-              </li>
-              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: '0.5rem' }}>✓</span>
-                Custom branding
+            </ul>
               </li>
             </ul>
 
@@ -213,7 +219,15 @@ export default function Subscription() {
             <ul style={{ listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '0.5rem' }}>✓</span>
-                Everything in Pro
+                Everything in Professional
+              </li>
+              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '0.5rem' }}>✓</span>
+                4 elite templates + custom fonts
+              </li>
+              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '0.5rem' }}>✓</span>
+                Exclusive clip art & decorations
               </li>
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '0.5rem' }}>✓</span>
@@ -222,14 +236,6 @@ export default function Subscription() {
               <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '0.5rem' }}>✓</span>
                 Dedicated support
-              </li>
-              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: '0.5rem' }}>✓</span>
-                API access
-              </li>
-              <li style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: '0.5rem' }}>✓</span>
-                Custom integrations
               </li>
             </ul>
 

@@ -51,13 +51,16 @@ model Course {
   duration    Int?     // in weeks
   content     Json     // AI-generated course structure
   status      String   @default("draft") // draft, published
+  templateId  String?  // Reference to template for PDF export styling
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template Template? @relation(fields: [templateId], references: [id])
 
   @@index([userId])
   @@index([status])
+  @@index([templateId])
 }
 
 model Video {
@@ -94,4 +97,26 @@ model Quiz {
 
   @@index([userId])
   @@index([status])
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String   // business, education, creative, professional, minimal, elegant
+  tier        String   // free, starter, professional, enterprise
+  thumbnail   String?  // URL or path to preview image
+  fonts       Json     // Font configuration: { heading: "...", body: "...", accent: "..." }
+  colors      Json     // Color scheme: { primary: "...", secondary: "...", accent: "...", background: "..." }
+  clipArt     Json     // Clip art assets: { icons: [], decorations: [], borders: [] }
+  layout      Json     // Layout configuration for PDF export
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses Course[]
+
+  @@index([tier])
+  @@index([category])
+  @@index([isActive])
 }

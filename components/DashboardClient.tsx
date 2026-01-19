@@ -14,7 +14,8 @@ import {
   Settings,
   LogOut,
   Loader2,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -211,7 +212,7 @@ export default function DashboardClient() {
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
             <Link href="/dashboard/generate">
               <ActionButton
                 icon={<BookOpen className="w-6 h-6" />}
@@ -234,6 +235,14 @@ export default function DashboardClient() {
                 title="Build Quiz"
                 description="Create interactive assessments"
                 color="green"
+              />
+            </Link>
+            <Link href="/templates">
+              <ActionButton
+                icon={<Sparkles className="w-6 h-6" />}
+                title="Design Templates"
+                description="Browse beautiful PDF templates"
+                color="purple"
               />
             </Link>
           </div>
@@ -338,6 +347,7 @@ function ActionButton({
     primary: 'bg-primary-50 text-primary-600 hover:bg-primary-100',
     accent: 'bg-accent-50 text-accent-600 hover:bg-accent-100',
     green: 'bg-green-50 text-green-600 hover:bg-green-100',
+    purple: 'bg-purple-50 text-purple-600 hover:bg-purple-100',
   };
 
   return (
