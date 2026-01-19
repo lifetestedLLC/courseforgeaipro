@@ -79,11 +79,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       templates: filteredTemplates,
-      // Note: userTier contains effectiveTier for UI display (e.g., "enterprise" for admins)
-      // This maintains backward compatibility and ensures UI shows correct tier badge
-      userTier: effectiveTier, 
-      effectiveTier, // Explicit field for effective tier (recommended for new code)
-      actualTier: userTier, // Raw subscription tier from database (for reference/debugging)
+      // Field explanation:
+      // - userTier: Contains EFFECTIVE tier for UI display (backward compatible)
+      //   This is what the UI needs to show correct tier badge and upgrade prompts
+      //   For admins: returns "enterprise" (even if DB has "free")
+      //   For users: returns their actual subscription tier
+      userTier: effectiveTier,
+      // - effectiveTier: Duplicate of userTier (explicit field for new code)
+      effectiveTier,
+      // - actualTier: Raw subscription tier from database (for reference/debugging)
+      //   This is the literal value stored in the subscriptionTier column
+      actualTier: userTier,
       total: filteredTemplates.length,
     });
 
