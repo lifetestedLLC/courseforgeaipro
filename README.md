@@ -66,13 +66,28 @@ Admin users have **unlimited access to all features** and templates, regardless 
 
 See [ADMIN_SETUP.md](./ADMIN_SETUP.md) for instructions on creating and managing admin users.
 See [ADMIN_PRIVILEGES.md](./ADMIN_PRIVILEGES.md) for detailed documentation on admin capabilities.
+See [ADMIN_TIER_TROUBLESHOOTING.md](./ADMIN_TIER_TROUBLESHOOTING.md) if admin users are seeing "free tier" instead of "enterprise tier".
 
 Default admin credentials (change after first login):
 - Email: `admin@courseforgeai.org`
 - Password: `Admin123!`
 
+### Admin Diagnostic Commands
+
+```bash
+# Verify the admin tier system is working correctly
+npm run admin:verify
+
+# Diagnose admin user configuration
+npm run admin:diagnose
+
+# Fix admin role in database
+npm run admin:fix-role admin@courseforgeai.org
+```
+
 ## Documentation
 
+- **[Admin Tier Troubleshooting](./ADMIN_TIER_TROUBLESHOOTING.md)** - 🔍 Fix admin users seeing "free tier"
 - **[Admin Privileges](./ADMIN_PRIVILEGES.md)** - 👑 Admin capabilities and implementation details
 - **[Quick Fix: Production Database](./QUICK_FIX_PRODUCTION_DATABASE.md)** - ⚡ 5-minute production database fix
 - **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for local development setup

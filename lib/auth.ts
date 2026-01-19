@@ -77,25 +77,38 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
-        // Fetch user role from database only when first creating the token
-        // The role will persist in the token and won't be fetched again on subsequent calls
-        if (token.role === undefined) {
-          try {
-            const dbUser = await prisma.user.findUnique({
-              where: { id: user.id },
-              select: { role: true }
-            });
-            token.role = dbUser?.role || 'user';
-          } catch (error) {
-            logger.error("Error fetching user role for JWT", error as Error);
-            // Default to 'user' role if database query fails
+      }
+      
+      // Refresh user role from database periodically to catch role changes
+      // This ensures admin privileges are recognized without requiring re-login
+      const ROLE_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+      
+      const shouldRefreshRole = 
+        token.role === undefined ||  // First time
+        trigger === 'update' ||       // Manual token update
+        !token.roleLastFetched ||     // No timestamp
+        Date.now() - (token.roleLastFetched as number) > ROLE_REFRESH_INTERVAL_MS;
+      
+      if (shouldRefreshRole && token.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true }
+          });
+          token.role = dbUser?.role || 'user';
+          token.roleLastFetched = Date.now();
+        } catch (error) {
+          logger.error("Error fetching user role for JWT", error as Error);
+          // Keep existing role if database query fails, or default to 'user'
+          if (token.role === undefined) {
             token.role = 'user';
           }
         }
       }
+      
       return token;
     },
     async session({ session, token }) {
