@@ -79,9 +79,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       templates: filteredTemplates,
-      userTier: effectiveTier, // For backward compatibility, shows effective tier (enterprise for admins)
-      effectiveTier, // Explicit field for effective tier (for display)
-      actualTier: userTier, // Raw subscription tier from database (for reference)
+      // Note: userTier contains effectiveTier for UI display (e.g., "enterprise" for admins)
+      // This maintains backward compatibility and ensures UI shows correct tier badge
+      userTier: effectiveTier, 
+      effectiveTier, // Explicit field for effective tier (recommended for new code)
+      actualTier: userTier, // Raw subscription tier from database (for reference/debugging)
       total: filteredTemplates.length,
     });
 
