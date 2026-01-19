@@ -17,10 +17,37 @@ import {
   Shield
 } from 'lucide-react';
 
+interface DashboardStats {
+  totalCourses: number;
+  totalVideos: number;
+  totalQuizzes: number;
+  coursesThisMonth: number;
+  videosThisMonth: number;
+  quizzesThisMonth: number;
+  totalExports: number;
+  exportsThisMonth: number;
+}
+
+interface RecentCourse {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface DashboardData {
+  stats: DashboardStats;
+  recentCourses: RecentCourse[];
+}
+
 export default function DashboardClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -31,6 +58,7 @@ export default function DashboardClient() {
   useEffect(() => {
     if (session?.user) {
       fetchCurrentUser();
+      fetchDashboardData();
     }
   }, [session]);
 
@@ -46,7 +74,22 @@ export default function DashboardClient() {
     }
   };
 
-  if (status === 'loading') {
+  const fetchDashboardData = async () => {
+    try {
+      setIsLoadingData(true);
+      const response = await fetch('/api/dashboard/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+
+  if (status === 'loading' || isLoadingData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -59,6 +102,18 @@ export default function DashboardClient() {
 
   if (!session) {
     return null;
+  }
+
+  // Show loading state if data hasn't been fetched yet
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   const handleSignOut = async () => {
@@ -120,26 +175,26 @@ export default function DashboardClient() {
           <StatCard
             icon={<BookOpen className="w-6 h-6 text-primary-600" />}
             label="Total Courses"
-            value="12"
-            trend="+3 this month"
+            value={dashboardData.stats.totalCourses.toString()}
+            trend={dashboardData.stats.coursesThisMonth > 0 ? `+${dashboardData.stats.coursesThisMonth} this month` : 'No activity this month'}
           />
           <StatCard
             icon={<Video className="w-6 h-6 text-accent-600" />}
             label="Videos Created"
-            value="48"
-            trend="+15 this month"
+            value={dashboardData.stats.totalVideos.toString()}
+            trend={dashboardData.stats.videosThisMonth > 0 ? `+${dashboardData.stats.videosThisMonth} this month` : 'No activity this month'}
           />
           <StatCard
             icon={<FileQuestion className="w-6 h-6 text-green-600" />}
             label="Quizzes Generated"
-            value="89"
-            trend="+22 this month"
+            value={dashboardData.stats.totalQuizzes.toString()}
+            trend={dashboardData.stats.quizzesThisMonth > 0 ? `+${dashboardData.stats.quizzesThisMonth} this month` : 'No activity this month'}
           />
           <StatCard
             icon={<Download className="w-6 h-6 text-blue-600" />}
             label="Exports"
-            value="25"
-            trend="+8 this month"
+            value={dashboardData.stats.totalExports.toString()}
+            trend={dashboardData.stats.exportsThisMonth > 0 ? `+${dashboardData.stats.exportsThisMonth} this month` : 'No activity this month'}
           />
         </div>
 
@@ -178,34 +233,42 @@ export default function DashboardClient() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-900">Recent Courses</h2>
-            <button className="text-primary-600 hover:text-primary-700 font-medium flex items-center">
+            <Link 
+              href="/dashboard/generate"
+              className="text-primary-600 hover:text-primary-700 font-medium flex items-center"
+            >
               <Plus className="w-4 h-4 mr-1" />
               New Course
-            </button>
+            </Link>
           </div>
-          <div className="space-y-4">
-            <CourseItem
-              title="Introduction to Python Programming"
-              status="Published"
-              progress={100}
-              videos={12}
-              quizzes={8}
-            />
-            <CourseItem
-              title="Web Development Masterclass"
-              status="Draft"
-              progress={65}
-              videos={8}
-              quizzes={5}
-            />
-            <CourseItem
-              title="Data Science Fundamentals"
-              status="In Progress"
-              progress={45}
-              videos={5}
-              quizzes={3}
-            />
-          </div>
+          {dashboardData.recentCourses.length > 0 ? (
+            <div className="space-y-4">
+              {dashboardData.recentCourses.map((course) => (
+                <CourseItem
+                  key={course.id}
+                  title={course.title}
+                  description={course.description || ''}
+                  status={course.status}
+                  updatedAt={course.updatedAt}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No courses yet</h3>
+              <p className="text-gray-500 mb-6">
+                Start creating your first AI-powered course today
+              </p>
+              <Link
+                href="/dashboard/generate"
+                className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create Your First Course
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Integrations */}
@@ -215,8 +278,8 @@ export default function DashboardClient() {
             Connect your courses to popular learning platforms
           </p>
           <div className="grid md:grid-cols-4 gap-4">
-            <IntegrationButton name="Coursera" connected={true} />
-            <IntegrationButton name="Udemy" connected={true} />
+            <IntegrationButton name="Coursera" connected={false} />
+            <IntegrationButton name="Udemy" connected={false} />
             <IntegrationButton name="Teachable" connected={false} />
             <IntegrationButton name="Thinkific" connected={false} />
           </div>
@@ -278,50 +341,59 @@ function ActionButton({
 
 function CourseItem({ 
   title, 
+  description,
   status, 
-  progress, 
-  videos, 
-  quizzes 
+  updatedAt
 }: { 
   title: string, 
+  description: string,
   status: string, 
-  progress: number, 
-  videos: number, 
-  quizzes: number 
+  updatedAt: string
 }) {
-  const statusColor = {
-    'Published': 'bg-green-100 text-green-800',
-    'Draft': 'bg-yellow-100 text-yellow-800',
-    'In Progress': 'bg-blue-100 text-blue-800',
+  const getStatusColor = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
+    if (normalizedStatus === 'published') return 'bg-green-100 text-green-800';
+    if (normalizedStatus === 'draft') return 'bg-yellow-100 text-yellow-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  const statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    return date.toLocaleDateString();
   };
 
   return (
     <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-      <div className="flex justify-between items-start mb-3">
-        <div>
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex-1">
           <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
-            <span className="flex items-center">
-              <Video className="w-4 h-4 mr-1" />
-              {videos} videos
-            </span>
-            <span className="flex items-center">
-              <FileQuestion className="w-4 h-4 mr-1" />
-              {quizzes} quizzes
-            </span>
+          {description && (
+            <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{ 
+              display: '-webkit-box', 
+              WebkitLineClamp: 2, 
+              WebkitBoxOrient: 'vertical' 
+            }}>
+              {description}
+            </p>
+          )}
+          <div className="text-xs text-gray-500">
+            Updated {formatDate(updatedAt)}
           </div>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor[status as keyof typeof statusColor]}`}>
-          {status}
+        <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-4 ${getStatusColor(status)}`}>
+          {statusDisplay}
         </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <div 
-          className="bg-primary-600 h-2 rounded-full transition-all" 
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      <div className="text-xs text-gray-600 mt-1">{progress}% complete</div>
     </div>
   );
 }
