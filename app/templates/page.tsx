@@ -241,11 +241,11 @@ function TemplateCard({
         </div>
 
         {/* Lock Overlay for Inaccessible Templates */}
-        {!template.hasAccess && (
+        {!template.hasAccess && template.upgradeToTier && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white">
               <Lock className="w-12 h-12 mx-auto mb-2" />
-              <p className="font-semibold">Upgrade to {TIER_LABELS[template.upgradeToTier!]}</p>
+              <p className="font-semibold">Upgrade to {TIER_LABELS[template.upgradeToTier as SubscriptionTier]}</p>
             </div>
           </div>
         )}

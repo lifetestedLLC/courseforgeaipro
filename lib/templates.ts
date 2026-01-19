@@ -327,7 +327,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     },
   },
   {
-    name: 'Designer\'s Choice',
+    name: "Designer's Choice",
     description: 'Exclusive high-end creative template',
     category: 'creative',
     tier: 'enterprise',
