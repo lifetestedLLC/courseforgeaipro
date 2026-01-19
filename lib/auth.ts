@@ -77,20 +77,23 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         // Fetch user role from database only when first creating the token
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { role: true }
-          });
-          token.role = dbUser?.role || 'user';
-        } catch (error) {
-          logger.error("Error fetching user role for JWT", error as Error);
-          // Default to 'user' role if database query fails
-          token.role = 'user';
+        // The role will persist in the token and won't be fetched again on subsequent calls
+        if (!token.role) {
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: user.id },
+              select: { role: true }
+            });
+            token.role = dbUser?.role || 'user';
+          } catch (error) {
+            logger.error("Error fetching user role for JWT", error as Error);
+            // Default to 'user' role if database query fails
+            token.role = 'user';
+          }
         }
       }
       return token;

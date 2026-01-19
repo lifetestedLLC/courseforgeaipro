@@ -8,10 +8,19 @@ import { Loader2 } from 'lucide-react';
 import { getEffectiveTier } from '@/lib/subscription';
 import type { SubscriptionTier } from '@/types/template';
 
+interface CurrentUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  subscriptionTier: string | null;
+  subscriptionStatus: string | null;
+}
+
 export default function AccountClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -280,7 +289,7 @@ export default function AccountClient() {
                   <div className="text-sm text-white text-opacity-90">
                     {(() => {
                       const effectiveTier = getEffectiveTier(
-                        currentUser?.subscriptionTier as SubscriptionTier | null | undefined,
+                        (currentUser?.subscriptionTier as SubscriptionTier) || null,
                         currentUser?.role
                       );
                       const tierDisplay = effectiveTier.charAt(0).toUpperCase() + effectiveTier.slice(1);
