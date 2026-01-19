@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
 
     // Add access information to each template
     const templatesWithAccess = templates.map(template => {
-      // Note: hasAccessToTemplate uses raw userTier + userRole and internally
-      // handles admin privileges via hasAccessToTier function
+      // Note: hasAccessToTemplate uses the raw database subscription tier (userTier)
+      // combined with userRole. It internally handles admin privileges via hasAccessToTier.
       const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
       return {
         ...template,
@@ -79,8 +79,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       templates: filteredTemplates,
-      userTier: effectiveTier, // Effective tier for display (enterprise for admins)
-      actualTier: userTier, // Raw subscription tier from database
+      userTier: effectiveTier, // For backward compatibility, shows effective tier (enterprise for admins)
+      effectiveTier, // Explicit field for effective tier (for display)
+      actualTier: userTier, // Raw subscription tier from database (for reference)
       total: filteredTemplates.length,
     });
 
