@@ -1,8 +1,13 @@
+'use client';
+
 import Link from 'next/link';
-import { Sparkles, Video, FileQuestion, Zap, Download, Users } from 'lucide-react';
+import { Sparkles, Video, FileQuestion, Zap, Download, Users, Menu, X } from 'lucide-react';
+import { useState } from 'react';
 import PricingCard from '@/components/PricingCard';
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -14,6 +19,7 @@ export default function Home() {
                 CourseForge AI
               </Link>
             </div>
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               <Link href="#features" className="text-gray-700 hover:text-primary-600">Features</Link>
               <Link href="#pricing" className="text-gray-700 hover:text-primary-600">Pricing</Link>
@@ -23,7 +29,61 @@ export default function Home() {
                 Get Started
               </Link>
             </div>
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-gray-700 hover:text-primary-600 p-2"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 space-y-3 border-t border-gray-200 mt-2">
+              <Link 
+                href="#features" 
+                className="block text-gray-700 hover:text-primary-600 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Features
+              </Link>
+              <Link 
+                href="#pricing" 
+                className="block text-gray-700 hover:text-primary-600 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              <Link 
+                href="#integrations" 
+                className="block text-gray-700 hover:text-primary-600 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Integrations
+              </Link>
+              <Link 
+                href="/login" 
+                className="block text-gray-700 hover:text-primary-600 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Link 
+                href="/register" 
+                className="block bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 

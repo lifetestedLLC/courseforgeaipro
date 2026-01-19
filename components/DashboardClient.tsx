@@ -160,11 +160,21 @@ export default function DashboardClient() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome to Your Creator Dashboard
+        {/* Welcome Banner */}
+        <div className="mb-8 bg-gradient-to-r from-primary-600 to-accent-600 rounded-xl shadow-lg p-6 text-white">
+          <h1 className="text-3xl font-bold mb-2">
+            Welcome back, {session.user?.name || 'Creator'}! 🎉
           </h1>
+          <p className="text-primary-50 text-lg">
+            Ready to create amazing courses? Let's continue building something great together.
+          </p>
+        </div>
+
+        {/* Dashboard Overview */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Your Creator Dashboard
+          </h2>
           <p className="text-gray-600">
             Create, manage, and export your AI-powered courses
           </p>
