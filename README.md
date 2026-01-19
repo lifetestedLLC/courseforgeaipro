@@ -62,7 +62,10 @@ See:
 
 ## Admin Setup
 
+Admin users have **unlimited access to all features** and templates, regardless of subscription tier. 
+
 See [ADMIN_SETUP.md](./ADMIN_SETUP.md) for instructions on creating and managing admin users.
+See [ADMIN_PRIVILEGES.md](./ADMIN_PRIVILEGES.md) for detailed documentation on admin capabilities.
 
 Default admin credentials (change after first login):
 - Email: `admin@courseforgeai.org`
@@ -70,6 +73,7 @@ Default admin credentials (change after first login):
 
 ## Documentation
 
+- **[Admin Privileges](./ADMIN_PRIVILEGES.md)** - 👑 Admin capabilities and implementation details
 - **[Quick Fix: Production Database](./QUICK_FIX_PRODUCTION_DATABASE.md)** - ⚡ 5-minute production database fix
 - **[Getting Started Guide](./GETTING_STARTED.md)** - ⭐ Start here for local development setup
 - **[Production Database Setup](./PRODUCTION_DATABASE_SETUP.md)** - 🚀 Required for production deployment
