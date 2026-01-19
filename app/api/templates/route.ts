@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { hasAccessToTemplate } from '@/lib/templates';
+import { getEffectiveTier } from '@/lib/subscription';
 import { prisma } from '@/lib/prisma';
 import type { SubscriptionTier } from '@/types/template';
 
@@ -27,6 +28,9 @@ export async function GET(request: NextRequest) {
 
     const userTier: SubscriptionTier = (user?.subscriptionTier as SubscriptionTier) || 'free';
     const userRole = user?.role;
+    
+    // Get effective tier for display (admins get enterprise tier)
+    const effectiveTier = getEffectiveTier(userTier, userRole);
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -50,6 +54,8 @@ export async function GET(request: NextRequest) {
 
     // Add access information to each template
     const templatesWithAccess = templates.map(template => {
+      // Note: hasAccessToTemplate uses the raw database subscription tier (userTier)
+      // combined with userRole. It internally handles admin privileges via hasAccessToTier.
       const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
       return {
         ...template,
@@ -73,7 +79,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       templates: filteredTemplates,
-      userTier,
+      // Field explanation:
+      // - userTier: Contains EFFECTIVE tier for UI display (backward compatible)
+      //   This is what the UI needs to show correct tier badge and upgrade prompts
+      //   For admins: returns "enterprise" (even if DB has "free")
+      //   For users: returns their actual subscription tier
+      userTier: effectiveTier,
+      // - effectiveTier: Duplicate of userTier (explicit field for new code)
+      effectiveTier,
+      // - actualTier: Raw subscription tier from database (for reference/debugging)
+      //   This is the literal value stored in the subscriptionTier column
+      actualTier: userTier,
       total: filteredTemplates.length,
     });
 

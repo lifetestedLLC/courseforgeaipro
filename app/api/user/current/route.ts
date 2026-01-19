@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
+import { getEffectiveTier } from "@/lib/subscription";
+import type { SubscriptionTier } from "@/types/template";
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,9 +43,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Calculate effective tier (admins get enterprise tier)
+    const effectiveTier = getEffectiveTier(
+      user.subscriptionTier as SubscriptionTier | null,
+      user.role
+    );
+
     logger.info("Current user data retrieved", { userId: user.id });
 
-    return NextResponse.json(user);
+    return NextResponse.json({
+      ...user,
+      effectiveTier, // Add the effective tier for display purposes
+    });
   } catch (error) {
     logger.error("Error fetching current user", error as Error);
     return NextResponse.json(

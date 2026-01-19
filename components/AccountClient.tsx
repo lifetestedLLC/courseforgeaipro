@@ -15,6 +15,7 @@ interface CurrentUser {
   role?: string;
   subscriptionTier: SubscriptionTier | null;
   subscriptionStatus: string | null;
+  effectiveTier?: SubscriptionTier; // Added: effective tier from API
 }
 
 export default function AccountClient() {
@@ -36,7 +37,9 @@ export default function AccountClient() {
   const subscriptionPlanText = useMemo(() => {
     if (!currentUser) return '';
     
-    const effectiveTier = getEffectiveTier(currentUser.subscriptionTier, currentUser.role);
+    // Use effectiveTier from API if available, otherwise calculate it
+    // This provides backward compatibility if API doesn't return effectiveTier
+    const effectiveTier = currentUser.effectiveTier || getEffectiveTier(currentUser.subscriptionTier, currentUser.role);
     const tierDisplay = effectiveTier.charAt(0).toUpperCase() + effectiveTier.slice(1);
     const isAdmin = currentUser.role === 'admin';
     
