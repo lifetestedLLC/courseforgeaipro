@@ -53,6 +53,8 @@ export async function GET(request: NextRequest) {
     });
 
     // Add access information to each template
+    // Note: hasAccessToTemplate uses raw userTier + userRole and internally
+    // handles admin privileges via hasAccessToTier function
     const templatesWithAccess = templates.map(template => {
       const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
       return {
