@@ -49,18 +49,21 @@ export async function GET(request: NextRequest) {
     });
 
     // Add access information to each template
-    const templatesWithAccess = templates.map(template => ({
-      ...template,
-      fonts: template.fonts as any,
-      colors: template.colors as any,
-      clipArt: template.clipArt as any,
-      layout: template.layout as any,
-      hasAccess: hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole),
-      requiresUpgrade: !hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole),
-      upgradeToTier: !hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole) 
-        ? template.tier 
-        : undefined,
-    }));
+    const templatesWithAccess = templates.map(template => {
+      const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
+      return {
+        ...template,
+        fonts: template.fonts as any,
+        colors: template.colors as any,
+        clipArt: template.clipArt as any,
+        layout: template.layout as any,
+        hasAccess: userHasAccess,
+        requiresUpgrade: !userHasAccess,
+        upgradeToTier: !userHasAccess 
+          ? template.tier 
+          : undefined,
+      };
+    });
 
     // If showAll is false, only return accessible templates
     const filteredTemplates = showAll 

@@ -46,7 +46,7 @@ export async function GET(
     }
 
     // Check access
-    const hasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
+    const userHasAccess = hasAccessToTemplate(userTier, template.tier as SubscriptionTier, userRole);
 
     return NextResponse.json({
       success: true,
@@ -56,9 +56,9 @@ export async function GET(
         colors: template.colors as any,
         clipArt: template.clipArt as any,
         layout: template.layout as any,
-        hasAccess,
-        requiresUpgrade: !hasAccess,
-        upgradeToTier: !hasAccess ? template.tier : undefined,
+        hasAccess: userHasAccess,
+        requiresUpgrade: !userHasAccess,
+        upgradeToTier: !userHasAccess ? template.tier : undefined,
       },
     });
 
