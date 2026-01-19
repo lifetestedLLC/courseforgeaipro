@@ -3,30 +3,11 @@
  */
 
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
-import { getDirectDatabaseUrl } from '../lib/db-config';
+import { createScriptPrismaClient, cleanupDatabase } from '../lib/script-db';
+import { getEffectiveTier, isAdmin } from '../lib/subscription';
+import type { SubscriptionTier } from '../types/template';
 
-const directDbUrl = getDirectDatabaseUrl();
-const pool = new Pool({ connectionString: directDbUrl });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
-
-// Import subscription functions
-function isAdmin(userRole: string | null | undefined): boolean {
-  return userRole === 'admin';
-}
-
-function getEffectiveTier(
-  userTier: string | null | undefined,
-  userRole: string | null | undefined
-): string {
-  if (isAdmin(userRole)) {
-    return 'enterprise';
-  }
-  return userTier || 'free';
-}
+const { prisma, pool } = createScriptPrismaClient();
 
 async function diagnose() {
   try {
@@ -64,7 +45,10 @@ async function diagnose() {
       console.log();
       
       // Test effective tier calculation
-      const effectiveTier = getEffectiveTier(admin.subscriptionTier, admin.role);
+      const effectiveTier = getEffectiveTier(
+        admin.subscriptionTier as SubscriptionTier | null,
+        admin.role
+      );
       console.log('🧪 Effective Tier Calculation:');
       console.log(`   Input Role: ${admin.role}`);
       console.log(`   Input Tier: ${admin.subscriptionTier || 'NULL'}`);
@@ -96,8 +80,7 @@ async function diagnose() {
 }
 
 async function cleanup() {
-  await prisma.$disconnect();
-  await pool.end();
+  await cleanupDatabase(prisma, pool);
 }
 
 diagnose();

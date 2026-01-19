@@ -10,15 +10,9 @@
  */
 
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
-import { getDirectDatabaseUrl } from '../lib/db-config';
+import { createScriptPrismaClient, cleanupDatabase } from '../lib/script-db';
 
-const directDbUrl = getDirectDatabaseUrl();
-const pool = new Pool({ connectionString: directDbUrl });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const { prisma, pool } = createScriptPrismaClient();
 
 async function fixAdminRole() {
   try {
@@ -104,8 +98,7 @@ async function updateToAdmin(userId: string, email: string) {
 }
 
 async function cleanup() {
-  await prisma.$disconnect();
-  await pool.end();
+  await cleanupDatabase(prisma, pool);
 }
 
 fixAdminRole();

@@ -4,16 +4,10 @@
  */
 
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
-import { getDirectDatabaseUrl } from '../lib/db-config';
+import { createScriptPrismaClient, cleanupDatabase } from '../lib/script-db';
 import { getEffectiveTier, isAdmin, hasAccessToTier } from '../lib/subscription';
 
-const directDbUrl = getDirectDatabaseUrl();
-const pool = new Pool({ connectionString: directDbUrl });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const { prisma, pool } = createScriptPrismaClient();
 
 interface TestResult {
   name: string;
@@ -239,8 +233,7 @@ async function runTests() {
 }
 
 async function cleanup() {
-  await prisma.$disconnect();
-  await pool.end();
+  await cleanupDatabase(prisma, pool);
 }
 
 runTests();

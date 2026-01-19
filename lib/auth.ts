@@ -84,11 +84,13 @@ export const authOptions: NextAuthOptions = {
       
       // Refresh user role from database periodically to catch role changes
       // This ensures admin privileges are recognized without requiring re-login
+      const ROLE_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+      
       const shouldRefreshRole = 
         token.role === undefined ||  // First time
         trigger === 'update' ||       // Manual token update
         !token.roleLastFetched ||     // No timestamp
-        Date.now() - (token.roleLastFetched as number) > 5 * 60 * 1000; // 5 minutes
+        Date.now() - (token.roleLastFetched as number) > ROLE_REFRESH_INTERVAL_MS;
       
       if (shouldRefreshRole && token.id) {
         try {
