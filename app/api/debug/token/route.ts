@@ -11,7 +11,7 @@ import { getToken } from 'next-auth/jwt';
  * Usage:
  * 1. Set DEBUG_TOKEN_ROUTE=1 in environment variables
  * 2. Redeploy application
- * 3. Call GET /api/debug/token while authenticated
+ * 3. Call GET /api/debug/token while authenticated as admin
  * 4. Review returned token data (role, roleLastFetched, etc.)
  * 5. Remove this endpoint and unset DEBUG_TOKEN_ROUTE after diagnosis
  */
@@ -35,6 +35,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'No token found - user not authenticated' },
         { status: 401 }
+      );
+    }
+
+    // Additional security: only allow admin users to access debug endpoint
+    if (token.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Forbidden - admin access required' },
+        { status: 403 }
       );
     }
 

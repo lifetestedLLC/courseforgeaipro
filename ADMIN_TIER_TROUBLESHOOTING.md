@@ -140,11 +140,18 @@ Expected response:
 
 #### Enable Debug Endpoint
 
-1. **Set environment variable in Vercel:**
+1. **Set environment variables in Vercel:**
    ```bash
    # In Vercel dashboard:
    # Settings → Environment Variables → Add New
+   
+   # Enable debug endpoint (required)
    # Name: DEBUG_TOKEN_ROUTE
+   # Value: 1
+   # Environments: Production (or as needed)
+   
+   # Enable JWT logging (optional, recommended)
+   # Name: DEBUG_JWT_LOGGING
    # Value: 1
    # Environments: Production (or as needed)
    ```
@@ -163,6 +170,13 @@ Expected response:
    curl https://your-app.vercel.app/api/debug/token \
      -H "Cookie: next-auth.session-token=<your-session-cookie>"
    ```
+   
+   Or open in browser while logged in:
+   ```
+   https://your-app.vercel.app/api/debug/token
+   ```
+   
+   **Note:** Only admin users can access this endpoint. Non-admin users will receive a 403 Forbidden error.
    
    Or open in browser while logged in:
    ```
@@ -224,26 +238,31 @@ Expected response:
    - `shouldRefreshRole: true` confirms refresh logic is running
    - `Role changed` logs confirm role was updated from database
    - `timeSinceLastFetch` shows how long since last refresh
+   
+   **Note:** JWT logs only appear if `DEBUG_JWT_LOGGING=1` is set. If you don't see logs, verify the environment variable is set and the application was redeployed.
 
 #### Cleanup After Verification
 
-**⚠️ CRITICAL:** Remove debug endpoint after completing verification.
+**⚠️ CRITICAL:** Remove debug endpoint and logging after completing verification.
 
-1. **Delete or disable the debug endpoint:**
-   - Option A: Unset `DEBUG_TOKEN_ROUTE` in Vercel (endpoint returns 403)
-   - Option B: Remove the file `app/api/debug/token/route.ts` and redeploy
+1. **Disable or remove environment variables in Vercel:**
+   - Unset or delete `DEBUG_TOKEN_ROUTE` (endpoint will return 403)
+   - Unset or delete `DEBUG_JWT_LOGGING` (logging will stop)
 
-2. **Remove debug logging from `lib/auth.ts`:**
-   - Remove the `console.log('[JWT] Role refresh check:', ...)` block
-   - Remove the `console.log('[JWT] Role changed:', ...)` block
+2. **Optional: Remove debug code entirely:**
+   - Delete file `app/api/debug/token/route.ts`
+   - Remove console.log blocks from `lib/auth.ts` jwt callback (lines with `DEBUG_JWT_LOGGING` check)
 
 3. **Redeploy the application**
 
 4. **Verify endpoint is disabled:**
    ```bash
    curl https://your-app.vercel.app/api/debug/token
-   # Should return: {"error": "Debug endpoint disabled"}
+   # Should return: {"error": "Debug endpoint disabled"} or 404
    ```
+
+5. **Verify logging is disabled:**
+   - Check Vercel logs - should see no more [JWT] messages
 
 ## Production Deployment Checklist
 

@@ -93,16 +93,19 @@ export const authOptions: NextAuthOptions = {
         Date.now() - (token.roleLastFetched as number) > ROLE_REFRESH_INTERVAL_MS;
       
       // [JWT DEBUG] Log role refresh check - helps verify PR #40 behavior in production
-      console.log('[JWT] Role refresh check:', {
-        userId: token.sub || token.id,
-        shouldRefreshRole,
-        trigger,
-        currentRole: token.role,
-        roleLastFetched: token.roleLastFetched,
-        timeSinceLastFetch: token.roleLastFetched 
-          ? Date.now() - (token.roleLastFetched as number)
-          : null,
-      });
+      // Only logs when DEBUG_JWT_LOGGING environment variable is set to '1'
+      if (process.env.DEBUG_JWT_LOGGING === '1') {
+        console.log('[JWT] Role refresh check:', {
+          userId: token.sub || token.id,
+          shouldRefreshRole,
+          trigger,
+          currentRole: token.role,
+          roleLastFetched: token.roleLastFetched,
+          timeSinceLastFetch: token.roleLastFetched 
+            ? Date.now() - (token.roleLastFetched as number)
+            : null,
+        });
+      }
       
       if (shouldRefreshRole && token.id) {
         const oldRole = token.role;
@@ -115,7 +118,8 @@ export const authOptions: NextAuthOptions = {
           token.roleLastFetched = Date.now();
           
           // [JWT DEBUG] Log role change if it occurred
-          if (oldRole !== token.role) {
+          // Only logs when DEBUG_JWT_LOGGING environment variable is set to '1'
+          if (process.env.DEBUG_JWT_LOGGING === '1' && oldRole !== token.role) {
             console.log('[JWT] Role changed:', {
               userId: token.sub || token.id,
               oldRole,
