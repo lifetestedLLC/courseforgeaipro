@@ -39,11 +39,17 @@ export async function checkUsageLimit(
 
     // Admin users have unlimited access
     if (isAdmin(user.role)) {
-      logger.info('Admin user - unlimited access granted', { userId, feature });
+      // Get actual current usage for statistics/display
+      const currentUsage = 
+        feature === 'courses' ? user.coursesCreatedThisMonth :
+        feature === 'videos' ? user.videosCreatedThisMonth :
+        user.quizzesCreatedThisMonth;
+      
+      logger.info('Admin user - unlimited access granted', { userId, feature, currentUsage });
       return {
         allowed: true,
         limit: -1, // -1 indicates unlimited
-        current: 0,
+        current: currentUsage,
       };
     }
 
@@ -54,11 +60,15 @@ export async function checkUsageLimit(
       feature
     );
 
+    // Field map for usage counters
+    const fieldMap = {
+      courses: user.coursesCreatedThisMonth,
+      videos: user.videosCreatedThisMonth,
+      quizzes: user.quizzesCreatedThisMonth,
+    };
+
     // Get current usage
-    const currentUsage = 
-      feature === 'courses' ? user.coursesCreatedThisMonth :
-      feature === 'videos' ? user.videosCreatedThisMonth :
-      user.quizzesCreatedThisMonth;
+    const currentUsage = fieldMap[feature];
 
     // -1 means unlimited
     if (limit === -1) {
