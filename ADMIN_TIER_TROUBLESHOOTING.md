@@ -177,11 +177,6 @@ Expected response:
    ```
    
    **Note:** Only admin users can access this endpoint. Non-admin users will receive a 403 Forbidden error.
-   
-   Or open in browser while logged in:
-   ```
-   https://your-app.vercel.app/api/debug/token
-   ```
 
 3. **Expected response:**
    ```json
