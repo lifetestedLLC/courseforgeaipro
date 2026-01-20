@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import openai, { isOpenAIConfigured } from "@/lib/openai";
+import { checkUsageLimit, incrementUsage } from "@/lib/usage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
+      );
+    }
+
+    // Check usage limits (admins have unlimited access)
+    const usageCheck = await checkUsageLimit(session.user.id, 'videos');
+    if (!usageCheck.allowed) {
+      return NextResponse.json(
+        { 
+          error: usageCheck.message || "Usage limit exceeded",
+          limit: usageCheck.limit,
+          current: usageCheck.current,
+        },
+        { status: 403 }
       );
     }
 
@@ -97,6 +111,9 @@ Format the response as JSON with this structure:
 
     // Parse the JSON response
     const videoData = JSON.parse(content);
+
+    // Increment usage counter after successful generation
+    await incrementUsage(session.user.id, 'videos');
 
     return NextResponse.json({
       success: true,
