@@ -71,7 +71,7 @@ export default function TemplatesPage() {
   const fetchTemplates = async () => {
     try {
       setIsLoading(true);
-      const categoryParam = selectedCategory !== 'all' ? `?category=${selectedCategory}` : '?showAll=true';
+      const categoryParam = selectedCategory !== 'all' ? `?category=${selectedCategory}&showAll=true` : '?showAll=true';
       const response = await fetch(`/api/templates${categoryParam}`);
       
       if (response.ok) {
