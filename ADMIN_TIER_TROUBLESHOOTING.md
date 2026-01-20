@@ -132,6 +132,133 @@ Expected response:
    - Should NOT show: "Unlock Premium Templates" upgrade banner
    - Should have: Green checkmark on all templates (no locks)
 
+### 4. Debug JWT Token in Production (Temporary)
+
+**When to use:** If admin role changes are not taking effect in production after logging out/in, and you need to verify the JWT token contents and role refresh behavior.
+
+**⚠️ IMPORTANT:** This is a temporary diagnostic endpoint that should be removed after verification.
+
+#### Enable Debug Endpoint
+
+1. **Set environment variables in Vercel:**
+   ```bash
+   # In Vercel dashboard:
+   # Settings → Environment Variables → Add New
+   
+   # Enable debug endpoint (required)
+   # Name: DEBUG_TOKEN_ROUTE
+   # Value: 1
+   # Environments: Production (or as needed)
+   
+   # Enable JWT logging (optional, recommended)
+   # Name: DEBUG_JWT_LOGGING
+   # Value: 1
+   # Environments: Production (or as needed)
+   ```
+
+2. **Redeploy the application:**
+   - In Vercel dashboard, go to Deployments
+   - Click "Redeploy" on the latest deployment
+   - Or trigger a new deployment via git push
+
+#### Call Debug Endpoint
+
+1. **Log in as the admin user** whose token you want to inspect
+
+2. **Call the debug endpoint:**
+   ```bash
+   curl https://your-app.vercel.app/api/debug/token \
+     -H "Cookie: next-auth.session-token=<your-session-cookie>"
+   ```
+   
+   Or open in browser while logged in:
+   ```
+   https://your-app.vercel.app/api/debug/token
+   ```
+   
+   **Note:** Only admin users can access this endpoint. Non-admin users will receive a 403 Forbidden error.
+
+3. **Expected response:**
+   ```json
+   {
+     "userId": "user-id-here",
+     "email": "admin@example.com",
+     "role": "admin",
+     "roleLastFetched": 1737348000000,
+     "iat": 1737347000,
+     "exp": 1739939000,
+     "currentTime": 1737348123456,
+     "timeSinceRoleFetch": 123456
+   }
+   ```
+
+#### Interpret Results
+
+- **`role`**: Should be `"admin"` for admin users
+- **`roleLastFetched`**: Timestamp (ms) when role was last fetched from database
+- **`timeSinceRoleFetch`**: Time in ms since last role refresh
+  - Should refresh every 5 minutes (300,000 ms)
+  - If > 5 minutes, role will refresh on next request
+- **`iat`**: Token issued at (Unix timestamp in seconds)
+- **`exp`**: Token expires at (Unix timestamp in seconds)
+
+#### Check Vercel Logs for Role Refresh
+
+1. **Open Vercel logs:**
+   - Vercel Dashboard → Your Project → Logs
+   - Filter by "Functions" or search for "[JWT]"
+
+2. **Look for log entries:**
+   ```
+   [JWT] Role refresh check: {
+     userId: "...",
+     shouldRefreshRole: true,
+     trigger: undefined,
+     currentRole: "user",
+     roleLastFetched: 1737348000000,
+     timeSinceLastFetch: 301000
+   }
+   ```
+   
+   ```
+   [JWT] Role changed: {
+     userId: "...",
+     oldRole: "user",
+     newRole: "admin",
+     trigger: undefined
+   }
+   ```
+
+3. **What to verify:**
+   - `shouldRefreshRole: true` confirms refresh logic is running
+   - `Role changed` logs confirm role was updated from database
+   - `timeSinceLastFetch` shows how long since last refresh
+   
+   **Note:** JWT logs only appear if `DEBUG_JWT_LOGGING=1` is set. If you don't see logs, verify the environment variable is set and the application was redeployed.
+
+#### Cleanup After Verification
+
+**⚠️ CRITICAL:** Remove debug endpoint and logging after completing verification.
+
+1. **Disable or remove environment variables in Vercel:**
+   - Unset or delete `DEBUG_TOKEN_ROUTE` (endpoint will return 403)
+   - Unset or delete `DEBUG_JWT_LOGGING` (logging will stop)
+
+2. **Optional: Remove debug code entirely:**
+   - Delete file `app/api/debug/token/route.ts`
+   - Remove console.log blocks from `lib/auth.ts` jwt callback (lines with `DEBUG_JWT_LOGGING` check)
+
+3. **Redeploy the application**
+
+4. **Verify endpoint is disabled:**
+   ```bash
+   curl https://your-app.vercel.app/api/debug/token
+   # Should return: {"error": "Debug endpoint disabled"} or 404
+   ```
+
+5. **Verify logging is disabled:**
+   - Check Vercel logs - should see no more [JWT] messages
+
 ## Production Deployment Checklist
 
 When deploying to production:

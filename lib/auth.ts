@@ -92,7 +92,23 @@ export const authOptions: NextAuthOptions = {
         !token.roleLastFetched ||     // No timestamp
         Date.now() - (token.roleLastFetched as number) > ROLE_REFRESH_INTERVAL_MS;
       
+      // [JWT DEBUG] Log role refresh check - helps verify PR #40 behavior in production
+      // Only logs when DEBUG_JWT_LOGGING environment variable is set to '1'
+      if (process.env.DEBUG_JWT_LOGGING === '1') {
+        console.log('[JWT] Role refresh check:', {
+          userId: token.sub || token.id,
+          shouldRefreshRole,
+          trigger,
+          currentRole: token.role,
+          roleLastFetched: token.roleLastFetched,
+          timeSinceLastFetch: token.roleLastFetched 
+            ? Date.now() - (token.roleLastFetched as number)
+            : null,
+        });
+      }
+      
       if (shouldRefreshRole && token.id) {
+        const oldRole = token.role;
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id as string },
@@ -100,6 +116,17 @@ export const authOptions: NextAuthOptions = {
           });
           token.role = dbUser?.role || 'user';
           token.roleLastFetched = Date.now();
+          
+          // [JWT DEBUG] Log role change if it occurred
+          // Only logs when DEBUG_JWT_LOGGING environment variable is set to '1'
+          if (process.env.DEBUG_JWT_LOGGING === '1' && oldRole !== token.role) {
+            console.log('[JWT] Role changed:', {
+              userId: token.sub || token.id,
+              oldRole,
+              newRole: token.role,
+              trigger,
+            });
+          }
         } catch (error) {
           logger.error("Error fetching user role for JWT", error as Error);
           // Keep existing role if database query fails, or default to 'user'
