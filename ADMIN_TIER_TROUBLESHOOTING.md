@@ -194,6 +194,98 @@ If the issue persists after following these troubleshooting steps:
 4. Check browser console for API errors
 5. Verify NextAuth session is working: Check cookies in browser dev tools
 
+## Production Debugging Tools
+
+### Debug Token Endpoint (Temporary)
+
+When troubleshooting admin tier issues in production, you can temporarily enable a debug endpoint to inspect the JWT token.
+
+#### Enable the Debug Endpoint
+
+1. **Add Environment Variable in Vercel:**
+   - Go to your Vercel project settings
+   - Navigate to Environment Variables
+   - Add: `DEBUG_TOKEN_ROUTE` = `1`
+   - Save and redeploy
+
+2. **Access the Debug Endpoint:**
+   ```bash
+   # As an authenticated admin user, visit:
+   https://your-domain.com/api/debug/token
+   
+   # Or use curl with your session cookie:
+   curl -H "Cookie: next-auth.session-token=YOUR_TOKEN_HERE" \
+        https://your-domain.com/api/debug/token
+   ```
+
+3. **Inspect the Response:**
+   The endpoint returns a JSON object with your JWT token data:
+   ```json
+   {
+     "success": true,
+     "token": {
+       "id": "user_id_here",
+       "sub": "user_id_here",
+       "role": "admin",
+       "roleLastFetched": 1737345678901,
+       "iat": 1737345000,
+       "exp": 1739937000,
+       "jti": "unique-token-id"
+     },
+     "explanation": { ... }
+   }
+   ```
+
+4. **What to Look For:**
+   - ✅ `role` should be `"admin"` for admin users
+   - ✅ `roleLastFetched` should be a recent timestamp (within 5 minutes)
+   - ❌ If `role` is `"user"` or undefined, the role refresh logic isn't working
+   - ❌ If `roleLastFetched` is missing or very old, role refresh isn't triggering
+
+#### View JWT Refresh Logs
+
+The JWT callback now logs role refresh activity. To view these logs in Vercel:
+
+1. **Access Vercel Logs:**
+   ```bash
+   # Install Vercel CLI if not already installed
+   npm i -g vercel
+   
+   # Login to Vercel
+   vercel login
+   
+   # Tail logs for your project
+   vercel logs --follow
+   ```
+
+2. **Look for `[JWT]` Log Entries:**
+   ```
+   [JWT] Role refresh check triggered { userId: 'xxx', oldRole: 'user', ... }
+   [JWT] Role refreshed from database { userId: 'xxx', oldRole: 'user', newRole: 'admin', roleChanged: true, ... }
+   ```
+
+3. **What to Look For:**
+   - ✅ `[JWT] Role refresh check triggered` - Confirms the refresh logic runs
+   - ✅ `roleChanged: true` - Confirms role was updated from database
+   - ❌ `[JWT] Role refresh failed` - Indicates a database connection issue
+   - ❌ No `[JWT]` logs at all - The JWT callback might not be executing
+
+#### Cleanup Checklist (MANDATORY)
+
+After debugging is complete, you **must** clean up:
+
+- [ ] Remove `DEBUG_TOKEN_ROUTE` environment variable from Vercel
+- [ ] Redeploy the application (to clear any cached values)
+- [ ] Verify the debug endpoint returns 403:
+      ```bash
+      curl https://your-domain.com/api/debug/token
+      # Should return: {"error":"Not found"}
+      ```
+- [ ] Document findings in a GitHub issue or comment
+- [ ] Update this troubleshooting guide if new insights were discovered
+
+⚠️ **SECURITY WARNING:** The debug endpoint exposes JWT token data. Only enable it temporarily and disable immediately after debugging.
+
 ## Quick Fix Commands
 
 ```bash
