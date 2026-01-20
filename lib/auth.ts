@@ -93,13 +93,26 @@ export const authOptions: NextAuthOptions = {
         Date.now() - (token.roleLastFetched as number) > ROLE_REFRESH_INTERVAL_MS;
       
       if (shouldRefreshRole && token.id) {
+        const oldRole = token.role;
+        const oldTimestamp = token.roleLastFetched;
+        
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id as string },
             select: { role: true }
           });
-          token.role = dbUser?.role || 'user';
+          const newRole = dbUser?.role || 'user';
+          token.role = newRole;
           token.roleLastFetched = Date.now();
+          
+          // Log role refresh for debugging
+          logger.info("[JWT] Role refresh", {
+            userId: token.id,
+            oldRole: oldRole || 'undefined',
+            newRole,
+            trigger: trigger || 'periodic',
+            lastFetched: oldTimestamp ? new Date(oldTimestamp as number).toISOString() : 'never'
+          });
         } catch (error) {
           logger.error("Error fetching user role for JWT", error as Error);
           // Keep existing role if database query fails, or default to 'user'

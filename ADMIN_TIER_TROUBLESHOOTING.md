@@ -184,6 +184,74 @@ const user = await prisma.user.findUnique({
 ### Auth (Caches Role in JWT)
 - `/lib/auth.ts` - JWT callback caches role from database
 
+## Debug Tools (Temporary - Production Troubleshooting)
+
+### Debug Token Endpoint
+
+When admin users are seeing "Free Tier" in production despite having the correct role in the database, use the debug token endpoint to verify JWT token claims.
+
+#### Setup (Production Only)
+1. In Vercel Dashboard → Project Settings → Environment Variables
+2. Add: `DEBUG_TOKEN_ROUTE=1` for Production environment
+3. Redeploy the application (or trigger a new deployment)
+
+#### Usage
+1. Log in as the affected admin user
+2. Visit: `https://your-domain.com/api/debug/token`
+3. The endpoint returns JSON with token claims:
+
+```json
+{
+  "id": "user-id",
+  "email": "admin@example.com",
+  "name": "Admin User",
+  "role": "admin",
+  "roleLastFetched": 1705723456789,
+  "roleLastFetchedDate": "2024-01-20T04:37:36.789Z",
+  "iat": 1705723400,
+  "exp": 1708315400,
+  "jti": "token-id"
+}
+```
+
+#### What to Check
+- **role**: Should be `"admin"` (not `"user"` or null)
+- **roleLastFetched**: Should be within the last 5 minutes
+- **roleLastFetchedDate**: Human-readable timestamp - verify it's recent
+
+#### If Role is Wrong
+1. Verify database has correct role: `npx tsx scripts/diagnose-admin.ts`
+2. Check server logs for `[JWT] Role refresh` log entries
+3. If role is correct in DB but wrong in token:
+   - Log out completely
+   - Clear browser cookies
+   - Log back in
+   - Check `/api/debug/token` again
+
+#### Security Note
+⚠️ **This endpoint exposes JWT token data.** Only enable when actively troubleshooting.
+- Remove `DEBUG_TOKEN_ROUTE` environment variable after verification
+- The endpoint returns 404 when the variable is not set
+
+### JWT Refresh Logging
+
+The JWT callback in `/lib/auth.ts` now logs when role refresh occurs:
+
+```
+[JWT] Role refresh { userId: "...", oldRole: "user", newRole: "admin", trigger: "periodic", lastFetched: "2024-01-20T04:32:36.789Z" }
+```
+
+#### Viewing Logs in Production (Vercel)
+1. Go to Vercel Dashboard → Project → Logs
+2. Filter by "JWT" to see role refresh activity
+3. Look for entries when admin loads pages or logs in
+
+#### What to Look For
+- **Frequency**: Should refresh every 5 minutes when user is active
+- **oldRole → newRole**: Track role changes (e.g., "user" → "admin")
+- **trigger**: `"periodic"` for automatic refresh, `"update"` for forced refresh
+- **lastFetched**: When role was last fetched (should not be "never" after first login)
+
 ## Support
 
 If the issue persists after following these troubleshooting steps:
@@ -208,3 +276,18 @@ AUTO_FIX=true npx tsx scripts/fix-admin-role.ts admin@courseforgeai.org
 #    - Log back in
 #    - Check /account page
 ```
+
+## Cleanup Checklist (After Debug Verification)
+
+After using the debug tools to verify admin JWT tokens in production:
+
+- [ ] **Remove debug endpoint**: Delete `/app/api/debug/token/route.ts`
+- [ ] **Remove environment variable**: Delete `DEBUG_TOKEN_ROUTE` from Vercel environment variables
+- [ ] **Remove debug logging** (optional): Remove or comment out `[JWT] Role refresh` logging in `/lib/auth.ts` if no longer needed
+- [ ] **Redeploy**: Trigger new deployment to apply cleanup changes
+- [ ] **Update this doc**: Add note that debug tools were temporary and have been removed
+
+### Why Cleanup is Important
+- The debug endpoint exposes JWT token claims
+- Unnecessary logging can clutter production logs
+- Temporary debugging code should not remain in production long-term
